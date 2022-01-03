@@ -18,6 +18,7 @@
 	# </Directory>
 # </VirtualHost>
 
+
 set -e
 sudo apt update -y && apt upgrade && apt full-upgrade -y && apt dist-upgrade && apt autoremove -y && apt autoclean -y && apt clean -y 
 sudo apt install apache2 git php libapache2-mod-php php-mysql -y mysql-server -y phpmyadmin -y
