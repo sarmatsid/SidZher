@@ -28,7 +28,7 @@ app.post('/api/register', (req, res) => {
          res.status(400).json('Такой логин уже есть');
       }
    });
-});
+}); 
 
 app.post('/api/login', async function (req, res)  {
    let login = req.body["Login"], password = req.body["Password"];
@@ -36,6 +36,7 @@ app.post('/api/login', async function (req, res)  {
       if (err) throw err;
       if ((reply != undefined)) {
          pass = JSON.parse(reply)['password'];
+         
          if (bcrypt.compareSync(password, pass)) {
             if (err) throw err;
 //            loggedIn = JSON.parse(reply)['loggedIn'];

@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const messages = document.querySelector(".messages")
       const loginText = document.querySelector(".loginText")
       const passwordText = document.querySelector(".passwordText")
+
+
+      
       if ((loginText.value != '') && (passwordText.value != '')) {
         let res = await login(loginText.value, passwordText.value)
         if (res != 200) {
