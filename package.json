@@ -1,0 +1,13 @@
+{
+  "name": "hosting",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "redis": "^3.1.2"
+  }
+}
