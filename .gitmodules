@@ -1,3 +1,3 @@
-[submodule "kuzhersi_back"]
-	path = kuzhersi_back
-	url = git@github.com:CNDspace/kuzhersi_back.git
+[submodule "SidZher_crypto"]
+	path = SidZher_crypto
+	url = git@github.com:CNDspace/SidZher_crypto.git
