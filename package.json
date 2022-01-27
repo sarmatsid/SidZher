@@ -2,7 +2,7 @@
   "name": "hosting",
   "version": "1.0.0",
   "scripts": {
-    "rust": "cargo run --release --manifest-path ./kuzhersi_back/Cargo.toml",
+    "rust": "cargo run --release --manifest-path ./SidZher_crypto/Cargo.toml",
     "redis": "redis-server",
     "node": "node app.js",
     "start": "npm run redis & npm run rust & npm run node"
