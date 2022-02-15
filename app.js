@@ -4,10 +4,14 @@ const redis = require('redis'); //  устанавливаем пакет "redis
 const redisClient = redis.createClient(); // создаем его инстанс
 const app = express(); // создаем объект приложения
 const bodyParser = require("body-parser"); // подключаем из зависимостей bodyParser
+const Net = require('net');
 app.use(bodyParser.json())
 
 var bcrypt = require('bcrypt'); // подключаем bcrypt
 var salt = bcrypt.genSaltSync(10); // подключаем соль
+
+const port = 5141;
+const host = '127.0.0.1';
 
 let loggedIn = false;
 
@@ -39,35 +43,20 @@ app.post('/api/login', async function (req, res)  {
       "data": ""
    }
    let json_backend = JSON.stringify(json);
-   // console.log(json_backend);
-   const Net = require('net');
-
-   const port = 5141;
-   const host = '127.0.0.1';
-   
 
    const client = new Net.Socket();
-   // Send a connection request to the server.
-   client.connect({ port: port, host: host }, function() {
-       // If there is no error, the server has accepted the request and created a new 
-       // socket dedicated to us.
+   client.connect({ port: port, host: host }, function() { 
+
        console.log('TCP connection established with the server.');
-   
-       // The client can now send data to the server by writing to its socket.
-       client.write(json_backend);
    });
-   
-   // The client can also receive data from the server by reading from its socket.
+
+   client.end(json_backend);
+
    client.on('data', function(chunk) {
-       console.log(`Data received from the server: ${chunk.toString()}.`);
-       
-       // Request an end to the connection after the data has been received.
+       console.log(`${chunk.toString()}.`);
        client.end();
    });
    
-   client.on('end', function() {
-       console.log('Requested an end to the TCP connection');
-   });
 });
 
 
