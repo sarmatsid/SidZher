@@ -31,53 +31,27 @@ app.post('/api/register', (req, res) => {
 }); 
 
 app.post('/api/login', async function (req, res)  {
-   let login = req.body["Login"], password = req.body["Password"];
-   redisClient.get(login, (err, reply) => {
-      if (err) throw err;
-      if ((reply != undefined)) {
-         pass = JSON.parse(reply)['password'];
-         
-         if (bcrypt.compareSync(password, pass)) {
-            if (err) throw err;
-//            loggedIn = JSON.parse(reply)['loggedIn'];
-            loggedIn = true;
-            res.status(200).json('ОК');
-            // if (loggedIn != true) {
-            //    data = JSON.parse(reply);
-            //    data['loggedIn'] = true;
-            //    data = JSON.stringify(data);
-            //    redisClient.set(login, data, (err, reply) => {
-            //       if (err) throw err;
-            //       res.status(200).json('ОК');
-            //    });
-            // } else {
-            //    if (err) throw err;
-            //    res.status(200).json('ОК');
-            // }
-         } else {
-            res.status(400).json('Неверный пароль');
-         }
-      } else {
-         res.status(400).json('Неверный логин');
-      }   
+   let login = req.body["Login"];
+   let json = {
+      "step": 1,
+      "req_type": "auth",
+      "user": login,
+      "data": ""
+   }
+   let json_backend = JSON.stringify(json);
+   var net = require('net');
+   var client = new net.Socket();
+   client.connect(5141, '127.0.0.1', function() {
+	   console.log('Connected');
+	   client.write(json_backend);
    });
+   client.on('data', function(json_backend) {
+      console.log(json_backend);
+   });
+   // console.log(json_backend);     
 });
 
-// app.get('/logout/', (req, res) => {
-//    redisClient.get(login, (err, reply) => {
-//       if (err) throw err;
-//       if ((reply != undefined)) {
-//          data = JSON.parse(reply)
-//          data['loggedIn'] = false;
-//          data = JSON.stringify(data);
-//          redisClient.set(login, data, (err, reply) => {
-//             if (err) throw err;
-//             res.status(200).json('ОК');
-//          });
-//       } 
-//    res.send({ data: "OK" });
-//    }); 
-// });
+
 
 app.get('/logout/', (req, res) => {
    loggedIn = false;
