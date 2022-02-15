@@ -39,16 +39,35 @@ app.post('/api/login', async function (req, res)  {
       "data": ""
    }
    let json_backend = JSON.stringify(json);
-   var net = require('net');
-   var client = new net.Socket();
-   client.connect(5141, '127.0.0.1', function() {
-	   console.log('Connected');
-	   client.write(json_backend);
+   // console.log(json_backend);
+   const Net = require('net');
+
+   const port = 5141;
+   const host = '127.0.0.1';
+   
+
+   const client = new Net.Socket();
+   // Send a connection request to the server.
+   client.connect({ port: port, host: host }, function() {
+       // If there is no error, the server has accepted the request and created a new 
+       // socket dedicated to us.
+       console.log('TCP connection established with the server.');
+   
+       // The client can now send data to the server by writing to its socket.
+       client.write(json_backend);
    });
-   client.on('data', function(json_backend) {
-      console.log(json_backend);
+   
+   // The client can also receive data from the server by reading from its socket.
+   client.on('data', function(chunk) {
+       console.log(`Data received from the server: ${chunk.toString()}.`);
+       
+       // Request an end to the connection after the data has been received.
+       client.end();
    });
-   // console.log(json_backend);     
+   
+   client.on('end', function() {
+       console.log('Requested an end to the TCP connection');
+   });
 });
 
 
