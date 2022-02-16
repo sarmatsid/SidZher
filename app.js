@@ -13,7 +13,7 @@ var salt = bcrypt.genSaltSync(10); // подключаем соль
 const port = 5141;
 const host = '127.0.0.1';
 
-var JSEncrypt = require('jsencrypt');
+
 // const NodeRSA = require("encrypt-rsa").default;
 // const fs = require('fs');
 
@@ -23,6 +23,9 @@ var JSEncrypt = require('jsencrypt');
 // fs.writeFileSync('./private-key', privateKey);
 // fs.writeFileSync('./public-key', publicKey);
 
+// var JSEncrypt = require('jsencrypt');
+
+var cryptico = require('cryptico');
 
 var pubKey = '-----BEGIN PUBLIC KEY-----'+
 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuaSbiPgmOMHsWuVOC17'+
@@ -34,11 +37,16 @@ var pubKey = '-----BEGIN PUBLIC KEY-----'+
 'KQIDAQAB'+
 '-----END PUBLIC KEY-----';
 
-var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
-crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
-var data = 'Sasha';// В этой переменной текст который будем шифровать
-var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
-console.log('Зашифрованый текст:'+cryptoData);// Выводим зашифрованное сообщение
+var PlainText = 'Sasha';
+
+var EncryptionResult = cryptico.encrypt(PlainText, pubKey);
+console.log(EncryptionResult);
+
+// var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
+// crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
+// var data = 'Sasha';// В этой переменной текст который будем шифровать
+// var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
+// console.log('Зашифрованый текст:'+cryptoData);// Выводим зашифрованное сообщение
 
 
 // const encryptedText = nodeRSA.encryptStringWithRsaPublicKey({ 
