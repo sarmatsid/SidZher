@@ -27,15 +27,15 @@ const host = '127.0.0.1';
 
 var cryptico = require('cryptico');
 
-var pubKey = '-----BEGIN PUBLIC KEY-----'+
-'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuaSbiPgmOMHsWuVOC17'+
-'IHxA+Zuctt3pKSd5cJhOHBgAJUMkz/Uiiuf0gxFdMt46sghG4gSkkuz4Pl61Q9/M'+
-'1ZkK/K6/g0XkYWdSo3Iu17KvWLdtxgyvmnsrfANfTwExG/RNTN133B0pQdvyaq3K'+
-'0bz+Ish2g9Q04e0ipglxuFpf7gKDHr0gUGAE6mX13Z8BohUC09YYQqPQBs93fJsc'+
-'uuTgsLENMMjUN++K2ZkbPpSwsFx2uqmptjPpwXl+1+vYTKjuNx9fZZ76CcuGoVUf'+
-'QaT4hE2AXtjOKCYTc7hILRHbWxlWVv4rSm/N8VAH0TwHXeB+gyGG+CLoITuIyNH8'+
-'KQIDAQAB'+
-'-----END PUBLIC KEY-----';
+var pubKey = '-----BEGIN PUBLIC KEY-----' +
+   'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuaSbiPgmOMHsWuVOC17' +
+   'IHxA+Zuctt3pKSd5cJhOHBgAJUMkz/Uiiuf0gxFdMt46sghG4gSkkuz4Pl61Q9/M' +
+   '1ZkK/K6/g0XkYWdSo3Iu17KvWLdtxgyvmnsrfANfTwExG/RNTN133B0pQdvyaq3K' +
+   '0bz+Ish2g9Q04e0ipglxuFpf7gKDHr0gUGAE6mX13Z8BohUC09YYQqPQBs93fJsc' +
+   'uuTgsLENMMjUN++K2ZkbPpSwsFx2uqmptjPpwXl+1+vYTKjuNx9fZZ76CcuGoVUf' +
+   'QaT4hE2AXtjOKCYTc7hILRHbWxlWVv4rSm/N8VAH0TwHXeB+gyGG+CLoITuIyNH8' +
+   'KQIDAQAB' +
+   '-----END PUBLIC KEY-----';
 
 var PlainText = 'Sasha';
 
@@ -53,7 +53,7 @@ console.log(EncryptionResult);
 //    text: 'login', 
 //    keyPath: key
 //  });
- 
+
 //  console.log({ encryptedText });
 
 
@@ -65,9 +65,9 @@ let loggedIn = false;
 
 app.post('/api/register', (req, res) => {
    let login = req.body["Login"], password = req.body["Password"];
-   let passwordToSave = bcrypt.hashSync(password, salt); 
-//   var data = { 'password': passwordToSave, 'loggedIn': false };
-//   data = JSON.stringify(data);
+   let passwordToSave = bcrypt.hashSync(password, salt);
+   //   var data = { 'password': passwordToSave, 'loggedIn': false };
+   //   data = JSON.stringify(data);
    redisClient.get(login, (err, reply) => {
       if (err) throw err;
       if (reply == undefined) {
@@ -80,9 +80,9 @@ app.post('/api/register', (req, res) => {
          res.status(400).json('Такой логин уже есть');
       }
    });
-}); 
+});
 
-app.post('/api/login', async function (req, res)  {
+app.post('/api/login', async function (req, res) {
    let login = req.body["Login"];
    let json = {
       "step": 1,
@@ -93,18 +93,20 @@ app.post('/api/login', async function (req, res)  {
    let json_backend = JSON.stringify(json);
 
    const client = new Net.Socket();
-   client.connect({ port: port, host: host }, function() { 
+   client.connect({ port: port, host: host }, function () {
 
-       console.log('TCP connection established with the server.');
+      //  console.log('TCP connection established with the server.');
    });
 
    client.end(json_backend);
 
-   client.on('data', function(chunk) {
-       console.log(`${chunk.toString()}.`);
-       client.end();
+   client.on('data', function (chunk) {
+      var public_key = JSON.parse(chunk)['data'];
+      console.log(public_key);
+      client.end();
    });
-   
+
+
 });
 
 
@@ -112,7 +114,7 @@ app.post('/api/login', async function (req, res)  {
 app.get('/logout/', (req, res) => {
    loggedIn = false;
    res.send({ data: "OK" });
-}); 
+});
 app.get('/', (req, res) => {
    res.sendFile(path.join(__dirname, 'public/'));
 });
@@ -124,3 +126,6 @@ app.use(function (req, res, next) {
    next();
 });
 
+app.use(express.static('public'));
+
+app.listen(3000); // слушаем 3000 порт
