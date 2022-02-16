@@ -13,6 +13,46 @@ var salt = bcrypt.genSaltSync(10); // подключаем соль
 const port = 5141;
 const host = '127.0.0.1';
 
+var JSEncrypt = require('jsencrypt');
+// const NodeRSA = require("encrypt-rsa").default;
+// const fs = require('fs');
+
+// const nodeRSA = new NodeRSA();
+// const { privateKey, publicKey } = nodeRSA.createPrivateAndPublicKeys()
+
+// fs.writeFileSync('./private-key', privateKey);
+// fs.writeFileSync('./public-key', publicKey);
+
+
+var pubKey = '-----BEGIN PUBLIC KEY-----'+
+'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuaSbiPgmOMHsWuVOC17'+
+'IHxA+Zuctt3pKSd5cJhOHBgAJUMkz/Uiiuf0gxFdMt46sghG4gSkkuz4Pl61Q9/M'+
+'1ZkK/K6/g0XkYWdSo3Iu17KvWLdtxgyvmnsrfANfTwExG/RNTN133B0pQdvyaq3K'+
+'0bz+Ish2g9Q04e0ipglxuFpf7gKDHr0gUGAE6mX13Z8BohUC09YYQqPQBs93fJsc'+
+'uuTgsLENMMjUN++K2ZkbPpSwsFx2uqmptjPpwXl+1+vYTKjuNx9fZZ76CcuGoVUf'+
+'QaT4hE2AXtjOKCYTc7hILRHbWxlWVv4rSm/N8VAH0TwHXeB+gyGG+CLoITuIyNH8'+
+'KQIDAQAB'+
+'-----END PUBLIC KEY-----';
+
+var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
+crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
+var data = 'Sasha';// В этой переменной текст который будем шифровать
+var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
+console.log('Зашифрованый текст:'+cryptoData);// Выводим зашифрованное сообщение
+
+
+// const encryptedText = nodeRSA.encryptStringWithRsaPublicKey({ 
+//    text: 'login', 
+//    keyPath: key
+//  });
+ 
+//  console.log({ encryptedText });
+
+
+
+
+
+
 let loggedIn = false;
 
 app.post('/api/register', (req, res) => {
@@ -76,68 +116,3 @@ app.use(function (req, res, next) {
    next();
 });
 
-// app.get("/HW_2.html", function (request, response) {
-//    if (loggedIn) {
-//       response.sendFile(path.join(__dirname, 'public/HW_2.html'));
-//    } else {
-//       response.sendFile(path.join(__dirname, 'public/'));
-//    }
-// });
-
-app.use(express.static('public'));
-
-app.listen(3000); // слушаем 3000 порт
-
-// тестовое создание GET-запроса
-// app.get('/get/', (req, res) => {
-//    res.send({ data: "Hello" });
-// });
-
-
-// РАБОТА В КЛАССЕ
-
-// const http = require('http');
-// const fs = require('fs');
-
-// const requestListener = async function (req, res) {
-//    console.log(req.url);
-//    if (req.url === '/') {
-//       const data = fs.readFileSync('public/HW_2.html', {
-//          encoding: 'utf8',
-//       });
-//       res.setHeader('Content-Type', 'text/html');
-//       res.writeHead(200);
-//       res.end(data);
-//    } else if (req.url === '/page1') {
-//       const data = fs.readFileSync('public/Page_1.html', {
-//          encoding: 'utf8',
-//       });
-//       res.setHeader('Content-Type', 'text/html');
-//       res.writeHead(200);
-//       res.end(data);
-//    } else if (req.url === '/page2') {
-//       const data = fs.readFileSync('public/Page_2.html', {
-//          encoding: 'utf8',
-//       });
-//       res.setHeader('Content-Type', 'text/html');
-//       res.writeHead(200);
-//       res.end(data);
-//    } else if (req.url === '/HW_2_style.css') {
-//       const data = fs.readFileSync('public/HW_2_style.css', {
-//          encoding: 'utf8',
-//       });
-//       res.setHeader('Content-Type', 'text/css');
-//       res.writeHead(200);
-//       res.end(data);
-//    } else {
-//       res.writeHead(404);
-//       res.end();
-//    }
-// };
-
-// const server = http.createServer(requestListener);
-// const host = 'localhost';
-// const port = 8000;
-// server.listen(port, host, function () {
-//    console.log(`Server is running on http://${host}:${port}`);
-// });
