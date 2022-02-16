@@ -10,6 +10,8 @@ app.use(bodyParser.json())
 var bcrypt = require('bcrypt'); // подключаем bcrypt
 var salt = bcrypt.genSaltSync(10); // подключаем соль
 
+var cryptico = require('cryptico');
+
 const port = 5141;
 const host = '127.0.0.1';
 
@@ -25,22 +27,9 @@ const host = '127.0.0.1';
 
 // var JSEncrypt = require('jsencrypt');
 
-var cryptico = require('cryptico');
-
-var pubKey = '-----BEGIN PUBLIC KEY-----' +
-   'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuaSbiPgmOMHsWuVOC17' +
-   'IHxA+Zuctt3pKSd5cJhOHBgAJUMkz/Uiiuf0gxFdMt46sghG4gSkkuz4Pl61Q9/M' +
-   '1ZkK/K6/g0XkYWdSo3Iu17KvWLdtxgyvmnsrfANfTwExG/RNTN133B0pQdvyaq3K' +
-   '0bz+Ish2g9Q04e0ipglxuFpf7gKDHr0gUGAE6mX13Z8BohUC09YYQqPQBs93fJsc' +
-   'uuTgsLENMMjUN++K2ZkbPpSwsFx2uqmptjPpwXl+1+vYTKjuNx9fZZ76CcuGoVUf' +
-   'QaT4hE2AXtjOKCYTc7hILRHbWxlWVv4rSm/N8VAH0TwHXeB+gyGG+CLoITuIyNH8' +
-   'KQIDAQAB' +
-   '-----END PUBLIC KEY-----';
-
 var PlainText = 'Sasha';
 
-var EncryptionResult = cryptico.encrypt(PlainText, pubKey);
-console.log(EncryptionResult);
+
 
 // var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
 // crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
@@ -94,22 +83,19 @@ app.post('/api/login', async function (req, res) {
 
    const client = new Net.Socket();
    client.connect({ port: port, host: host }, function () {
-
-      //  console.log('TCP connection established with the server.');
    });
 
    client.end(json_backend);
 
    client.on('data', function (chunk) {
       var public_key = JSON.parse(chunk)['data'];
-      console.log(public_key);
+      var EncryptionResult = cryptico.encrypt(login, public_key);
+      console.log(EncryptionResult);
       client.end();
    });
 
-
+   
 });
-
-
 
 app.get('/logout/', (req, res) => {
    loggedIn = false;
@@ -128,4 +114,4 @@ app.use(function (req, res, next) {
 
 app.use(express.static('public'));
 
-app.listen(3000); // слушаем 3000 порт
+app.listen(3000); 
