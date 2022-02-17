@@ -15,6 +15,9 @@ var cryptico = require('cryptico');
 const port = 5141;
 const host = '127.0.0.1';
 
+const client = new Net.Socket();
+client.connect({ port: port, host: host }, function () { });
+
 
 // const NodeRSA = require("encrypt-rsa").default;
 // const fs = require('fs');
@@ -77,24 +80,40 @@ app.post('/api/login', async function (req, res) {
       "step": 1,
       "req_type": "auth",
       "user": login,
-      "data": ""
-   }
+      "data": "" /*  }asfasfasf}    */
+   };
    let json_backend = JSON.stringify(json);
 
-   const client = new Net.Socket();
-   client.connect({ port: port, host: host }, function () {
-   });
-
-   client.end(json_backend);
+   client.write(json_backend);
 
    client.on('data', function (chunk) {
-      var public_key = JSON.parse(chunk)['data'];
-      var EncryptionResult = cryptico.encrypt(login, public_key);
-      console.log(EncryptionResult);
-      client.end();
+      var json_req = JSON.parse(chunk);
+      if (json_req.step == 2) {
+         var EncryptionResult = cryptico.encrypt(login, json_req.data);
+         if (EncryptionResult.status == 'success') {
+
+            // console.log(EncryptionResult.cipher);
+            // json_req.step = 3;
+            // json_req.data = EncryptionResult.cipher;
+
+            json = {
+               "step": 3,
+               "req_type": "auth",
+               "user": login,
+               "data": `${EncryptionResult.cipher}`
+            };
+
+            json_backend = JSON.stringify(json);
+
+            client.write(json_backend);
+         }
+      }
    });
 
-   
+   client.on('data', function (chunk) {
+      console.log(chunk.toString());
+      // client.pause();
+   });
 });
 
 app.get('/logout/', (req, res) => {
