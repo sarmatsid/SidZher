@@ -10,29 +10,32 @@ document.addEventListener("DOMContentLoaded", function () {
     return response
   }
 
-  const logButton = document.querySelector(".logButton")
-  if (logButton != undefined) {
-    logButton.onclick = async function () {
+  const regButton = document.querySelector(".regButton")
+  if (regButton != undefined) {
+    regButton.onclick = async function () {
       const messages = document.querySelector(".messages")
       const loginText = document.querySelector(".loginText")
       const passwordText = document.querySelector(".passwordText")
-
-
-      
+      var passregexp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,20}$/;
       if ((loginText.value != '') && (passwordText.value != '')) {
-        let res = await login(loginText.value, passwordText.value)
-        if (res != 200) {
-          messages.textContent = "Неверный логин или пароль"
+        if (passwordText.value.match(passregexp)) {
+          let res = await reg(loginText.value, passwordText.value)
+          if (res != 200) {
+            messages.textContent = "Такой пользователь уже существует"
+          } else {
+            window.location.href = "HW_2.html"      
+          }
         } else {
-          window.location.href = 'HW_2.html';
+          messages.textContent = "Не соответствует политике создания пароля"
         }
       } else {
-        messages.textContent = "Логин и пароль не могут быть пустыми"
+        messages.textContent = "Логин и пароль не могут быть пустыми";
       }
-      loginText.value = ''
-      passwordText.value = ''
+      loginText.value = '';
+      passwordText.value = '';
     }
   }
+  
   const logOutButton = document.querySelector(".logout")
   if (logOutButton != undefined) {
     logOutButton.onclick = async function () {
