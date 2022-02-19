@@ -39,12 +39,14 @@ sequenceDiagram
 
 ```
 
+`step` is used for phased synchronization between the server and SidZher crypto module
+
 `req_type` can be `auth` or `reg`, where:
 
-- `auth` - Use for authentificate users
-- `reg` - Use for register new users
+- `auth` - Used for authentificate users
+- `reg` - Used for register new users
 
-`user` field uses for users login name
+`user` field used for users login name
 
 `data` field used for transfer public key, encrypted data and answer for login
 
