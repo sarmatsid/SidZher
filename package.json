@@ -10,18 +10,7 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
-    "buffer": "^6.0.3",
-    "cryptico": "^1.0.2",
-    "crypto": "^1.0.1",
-    "encrypt-rsa": "^1.2.1",
     "express": "^4.16.4",
-    "fs": "^0.0.1-security",
-    "jsencrypt": "^3.2.1",
-    "node-forge": "^1.2.1",
-    "openssl": "^2.0.0",
     "redis": "^3.1.2"
-  },
-  "devDependencies": {
-    "npm-run-all": "^4.1.5"
   }
 }
