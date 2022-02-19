@@ -10,7 +10,7 @@ app.use(bodyParser.json())
 var bcrypt = require('bcrypt'); // подключаем bcrypt
 var salt = bcrypt.genSaltSync(10); // подключаем соль
 
-var cryptico = require('cryptico');
+var cryptico = require('./cryptico_rsa');
 
 const port = 5141;
 const host = '127.0.0.1';
@@ -97,7 +97,7 @@ app.post('/api/login', async function (req, res) {
       client.on('data', function (chunk) {
          var json_req = JSON.parse(chunk);
          if (json_req.step == 2) {
-            var EncryptionResult = cryptico.encrypt(login, json_req.data);
+            var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
             if (EncryptionResult.status == 'success') {
 
                json = {
