@@ -28,7 +28,7 @@ const host = '127.0.0.1';
 
 // var JSEncrypt = require('jsencrypt');
 
-var PlainText = 'Sasha';
+// var PlainText = 'Sasha';
 
 
 
@@ -78,7 +78,7 @@ app.post('/api/login', async function (req, res) {
       "step": 1,
       "req_type": "auth",
       "user": login,
-      "data": "" /*  }asfasfasf}    */
+      "data": ""
    };
    json_backend = JSON.stringify(json);
 
@@ -88,47 +88,40 @@ app.post('/api/login', async function (req, res) {
    const client_2 = new Net.Socket();
    client_2.connect({ port: port, host: host }, function () { });
 
-   let step = 1;
+   client.write(json_backend);
 
-   if (step == 1) {
+   client.on('data', function (chunk) {
+      var json_req = JSON.parse(chunk);
+      if (json_req.step == 2) {
+         var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
+         if (EncryptionResult.status == 'success') {
 
-      client.write(json_backend);
+            json = {
+               "step": 3,
+               "req_type": "auth",
+               "user": login,
+               "data": `${EncryptionResult.cipher}`
+            };
 
-      client.on('data', function (chunk) {
-         var json_req = JSON.parse(chunk);
-         if (json_req.step == 2) {
-            var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
-            if (EncryptionResult.status == 'success') {
-
-               json = {
-                  "step": 3,
-                  "req_type": "auth",
-                  "user": login,
-                  "data": `${EncryptionResult.cipher}`
-               };
-
-               json_backend = JSON.stringify(json);
+            json_backend = JSON.stringify(json);
 
 
+            console.log(chunk.toString());
+
+            client.end();
+
+            step = 2;
+
+            client_2.write(json_backend);
+
+            client_2.on('data', function (chunk) {
                console.log(chunk.toString());
-
-               client.end();
-
-               step = 2;
-
-               if (step == 2) {
-                  client_2.write(json_backend);
-
-                  client_2.on('data', function (chunk) {
-                     console.log(chunk.toString());
-                     client_2.end();
-                     step = 1;
-                  });
-               };
-            }
+               client_2.end();
+               step = 1;
+            });
          }
-      });
-   };
+      }
+   });
 });
 
 app.get('/logout/', (req, res) => {
