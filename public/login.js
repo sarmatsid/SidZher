@@ -1,12 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   async function login(log, pas) {
+    // let asdf = undefined;
+    // let response = undefined;
     let result = await fetch('/api/login', {
       method: "POST",
       body: JSON.stringify({ "Login": log, "Password": pas }),
       headers: { 'Content-Type': 'application/json' }
     })
-    let response = await result["status"]
+
+    // .then(res => {
+    //   return res.text();
+    // })
+    //   .then(res => {
+    //     asdf = JSON.parse(res)["data"]
+    //     response = JSON.parse(res)["status"]
+    //   })
+
+
+    let response = result["status"]
     return response
   }
 
@@ -36,7 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logOutButton != undefined) {
     logOutButton.onclick = async function () {
       fetch("http://localhost:3000/logout/", {
-        method: 'GET', headers: { "Content-Type": "application/json" }
+        method: 'GET',
+        headers: { "Content-Type": "application/json" }
       })
         .then(res => {
           return res.text();
@@ -58,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
       body: JSON.stringify({ "Login": log, "Password": pas }),
       headers: { 'Content-Type': 'application/json' }
     })
-    let response = await result["status"]
+    let response = result["status"]
     return response
   }
   const regButton = document.querySelector(".regButton")

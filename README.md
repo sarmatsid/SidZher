@@ -25,6 +25,19 @@ sequenceDiagram
     Server->>+Client: OK/FAIL
 ```
 
+
+## Code flow
+
+```mermaid
+sequenceDiagram
+    Front->>+/app/login: Login
+    /app/login->>+Front: key
+    Front->>+Front: Encrypt
+    Front->>+/app/login_two: Encrypted password
+    /app/login_two->>+Front: OK/FAIL
+```
+
+
 ## Transfer type between server and Sidzher Crypto
 
 ### We use json, struct here:

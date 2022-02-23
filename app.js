@@ -15,8 +15,6 @@ var cryptico = require('./cryptico_rsa');
 const port = 5141;
 const host = '127.0.0.1';
 
-
-
 // const NodeRSA = require("encrypt-rsa").default;
 // const fs = require('fs');
 
@@ -32,7 +30,8 @@ const host = '127.0.0.1';
 
 
 
-// var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
+// var crypt = new jsencrypt.JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
+// var pubKey = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDlOJu6TyygqxfWT7eLtGDwajtNFOb9I5XRb6khyfD1Yt3YiCgQWMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76xFxdU6jE0NQ+Z+zEdhUTooNRaY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4gwQco1KRMDSmXSMkDwIDAQAB-----END PUBLIC KEY-----"
 // crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
 // var data = 'Sasha';// В этой переменной текст который будем шифровать
 // var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
@@ -65,6 +64,8 @@ app.post('/api/register', (req, res) => {
             if (err) throw err;
             loggedIn = true;
             res.status(200).json('ОК');
+            // res.status(200).json(({status: 200, data:"OKasfasfasfasf"})); // Set key in data field
+            // res.send({data:"OKasfasfasfasf"});
          });
       } else {
          res.status(400).json('Такой логин уже есть');
@@ -82,6 +83,9 @@ app.post('/api/login', async function (req, res) {
    };
    json_backend = JSON.stringify(json);
 
+   // res.status(200).json(({status: 200, data:"OKasfasfasfasf"})); // Set key in data field
+   // res.send({data:"OKasfasfasfasf"});
+   var crypt = new jsencrypt.JSEncrypt();
    const client = new Net.Socket();
    client.connect({ port: port, host: host }, function () { });
 
@@ -93,33 +97,30 @@ app.post('/api/login', async function (req, res) {
    client.on('data', function (chunk) {
       var json_req = JSON.parse(chunk);
       if (json_req.step == 2) {
-         var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
-         if (EncryptionResult.status == 'success') {
 
-            json = {
-               "step": 3,
-               "req_type": "auth",
-               "user": login,
-               "data": `${EncryptionResult.cipher}`
-            };
+         crypt.setPublicKey(json_req.data.val());
+         // var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
+         // if (EncryptionResult.status == 'success') {
 
-            json_backend = JSON.stringify(json);
+         json = {
+            "step": 3,
+            "req_type": "auth",
+            "user": login,
+            "data": `${EncryptionResult.cipher}`
+         };
 
+         json_backend = JSON.stringify(json);
+         console.log(chunk.toString());
 
+         client.end();
+         client_2.write(json_backend);
+
+         client_2.on('data', function (chunk) {
             console.log(chunk.toString());
-
-            client.end();
-
-            step = 2;
-
-            client_2.write(json_backend);
-
-            client_2.on('data', function (chunk) {
-               console.log(chunk.toString());
-               client_2.end();
-               step = 1;
-            });
-         }
+            client_2.end();
+            step = 1;
+         });
+         // }
       }
    });
 });
