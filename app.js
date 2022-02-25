@@ -135,6 +135,9 @@ app.get('/', (req, res) => {
 app.get('/login.js', (req, res) => {
    res.sendFile(path.join(__dirname, 'public/login.js'));
 });
+app.get('/jsencrypt.min.js', (req, res) => {
+   res.sendFile(path.join(__dirname, 'public/jsencrypt.min.js'));
+});
 app.use(function (req, res, next) {
    if (loggedIn == false) return res.redirect('/');
    next();
