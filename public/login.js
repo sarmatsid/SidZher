@@ -1,26 +1,39 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   async function login(log, pas) {
-    // let asdf = undefined;
-    // let response = undefined;
+    let publickey = undefined;
+    let responseStatus = undefined;
     let result = await fetch('/api/login', {
       method: "POST",
       body: JSON.stringify({ "Login": log, "Password": pas }),
       headers: { 'Content-Type': 'application/json' }
     })
+      .then(res => {
+        return res.text();
+      })
+      .then(res => {
+        publickey = JSON.parse(res)["data"]
+        responseStatus = JSON.parse(res)["status"]
+      })
+    if (responseStatus === 200) {
+      var crypt = new JSEncrypt();
+      crypt.setPublicKey(publickey);
+      var cryptoData = crypt.encrypt(pas);
+      console.log('Зашифрованый текст:' + cryptoData);
+    } else {
+      console.log('Ошибка шифрования')
+    }
 
-    // .then(res => {
-    //   return res.text();
-    // })
-    //   .then(res => {
-    //     asdf = JSON.parse(res)["data"]
-    //     response = JSON.parse(res)["status"]
-    //   })
-
-
-    let response = result["status"]
-    return response
+    // let response = result["status"]
+    // return response
   }
+
+
+  // var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
+  // crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
+  // var data = 'Sasha';// В этой переменной текст который будем шифровать
+  // var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
+  // console.log('Зашифрованый текст:'+cryptoData);// Выводим зашифрованное сообщение
 
   const logButton = document.querySelector(".logButton")
   if (logButton != undefined) {

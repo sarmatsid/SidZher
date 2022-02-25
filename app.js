@@ -45,11 +45,6 @@ const host = '127.0.0.1';
 
 //  console.log({ encryptedText });
 
-
-
-
-
-
 let loggedIn = false;
 
 app.post('/api/register', (req, res) => {
@@ -83,7 +78,7 @@ app.post('/api/login', async function (req, res) {
    };
    json_backend = JSON.stringify(json);
 
-   // res.status(200).json(({status: 200, data:"OKasfasfasfasf"})); // Set key in data field
+
    // res.send({data:"OKasfasfasfasf"});
    var crypt = new jsencrypt.JSEncrypt();
    const client = new Net.Socket();
@@ -97,6 +92,7 @@ app.post('/api/login', async function (req, res) {
    client.on('data', function (chunk) {
       var json_req = JSON.parse(chunk);
       if (json_req.step == 2) {
+            res.status(200).json(({status: 200, data:json_req.data})); // Set key in data field
 
          crypt.setPublicKey(json_req.data.val());
          // var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
