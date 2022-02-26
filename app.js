@@ -10,7 +10,6 @@ app.use(bodyParser.json())
 var bcrypt = require('bcrypt'); // подключаем bcrypt
 var salt = bcrypt.genSaltSync(10); // подключаем соль
 
-var cryptico = require('./cryptico_rsa');
 
 const port = 5141;
 const host = '127.0.0.1';
@@ -87,6 +86,7 @@ app.post('/api/login_step1', async function (req, res) {
    client.write(json_backend);
 
    client.on('data', function (chunk) {
+      console.log(chunk.toString());
       var json_req = JSON.parse(chunk);
       if (json_req.step == 2) {
          res.status(200).json(({ status: 200, data: json_req.data })); // Set key in data field

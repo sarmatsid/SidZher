@@ -25,15 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ "Login": log, "Password": cryptoData }),
         headers: { 'Content-Type': 'application/json' }
       })
-      return result["status"]
+      result_status = result["status"]
+      return result_status
     } else {
-      console.log('Ошибка шифрования')
+      console.log('Ошибка шифрования');
+      return 400;
     }
-
-    // let response = result["status"]
-    // return response
   }
-
 
   // var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
   // crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
