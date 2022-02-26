@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
   async function login(log, pas) {
     let publickey = undefined;
     let responseStatus = undefined;
-    let result = await fetch('/api/login', {
+    await fetch('/api/login_step1', {
       method: "POST",
-      body: JSON.stringify({ "Login": log, "Password": pas }),
+      body: JSON.stringify({ "Login": log }),
       headers: { 'Content-Type': 'application/json' }
     })
       .then(res => {
@@ -20,6 +20,12 @@ document.addEventListener("DOMContentLoaded", function () {
       crypt.setPublicKey(publickey);
       var cryptoData = crypt.encrypt(pas);
       console.log('Зашифрованый текст:' + cryptoData);
+      let result = await fetch('/api/login_step3', {
+        method: "POST",
+        body: JSON.stringify({ "Login": log, "Password": cryptoData }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      return result["status"]
     } else {
       console.log('Ошибка шифрования')
     }

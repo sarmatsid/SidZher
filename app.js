@@ -68,57 +68,68 @@ app.post('/api/register', (req, res) => {
    });
 });
 
-app.post('/api/login', async function (req, res) {
-   let login = req.body["Login"];
+app.post('/api/login_step1', async function (req, res) {
+   // let login = req.body["Login"];
    let json = {
       "step": 1,
       "req_type": "auth",
-      "user": login,
+      "user": req.body["Login"],
       "data": ""
    };
    json_backend = JSON.stringify(json);
 
 
    // res.send({data:"OKasfasfasfasf"});
-   var crypt = new jsencrypt.JSEncrypt();
+   // var crypt = new jsencrypt.JSEncrypt();
    const client = new Net.Socket();
    client.connect({ port: port, host: host }, function () { });
-
-   const client_2 = new Net.Socket();
-   client_2.connect({ port: port, host: host }, function () { });
 
    client.write(json_backend);
 
    client.on('data', function (chunk) {
       var json_req = JSON.parse(chunk);
       if (json_req.step == 2) {
-            res.status(200).json(({status: 200, data:json_req.data})); // Set key in data field
+         res.status(200).json(({ status: 200, data: json_req.data })); // Set key in data field
 
-         crypt.setPublicKey(json_req.data.val());
+         // crypt.setPublicKey(json_req.data.val());
          // var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
          // if (EncryptionResult.status == 'success') {
 
-         json = {
-            "step": 3,
-            "req_type": "auth",
-            "user": login,
-            "data": `${EncryptionResult.cipher}`
-         };
-
-         json_backend = JSON.stringify(json);
-         console.log(chunk.toString());
 
          client.end();
-         client_2.write(json_backend);
-
-         client_2.on('data', function (chunk) {
-            console.log(chunk.toString());
-            client_2.end();
-            step = 1;
-         });
-         // }
       }
    });
+});
+
+app.post('/api/login_step3', async function (req, res) {
+   json = {
+      "step": 3,
+      "req_type": "auth",
+      "user": req.body["Login"],
+      "data": req.body["Password"]
+   };
+
+   const client_2 = new Net.Socket();
+   client_2.connect({ port: port, host: host }, function () { });
+
+
+   json_backend = JSON.stringify(json);
+   // console.log(chunk.toString());
+
+   client_2.write(json_backend);
+
+   client_2.on('data', function (chunk) {
+      console.log(chunk.toString());
+      var json_req = JSON.parse(chunk);
+      if ((json_req.step == 4) && json_req.data == "OK")  {
+         res.status(200).json();
+      }
+      else {
+         res.status(400).json();
+      }
+      client_2.end();
+   });
+
 });
 
 app.get('/logout/', (req, res) => {
