@@ -132,22 +132,4 @@ document.addEventListener("DOMContentLoaded", function () {
       passwordText.value = '';
     }
   }
-
-  //   function get() {
-  //     fetch("http://localhost:3000/get/", {
-  //       method: 'GET', headers: { "Content-Type": "application/json" }
-  //     })
-  //       .then(res => {
-  //         console.log("res1", res)
-  //         return res.text();
-  //       })
-  //       .then(res => {
-  //         console.log("res2", res)
-  //         console.log("parse", JSON.parse(res)["data"])
-  //       })
-  //       .catch(res => {
-  //         console.log("Exception : ", res);
-  //       });
-  // }
-
 })
