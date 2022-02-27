@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let publickey = undefined; // задаем переменную publickey 
     let responseStatus = undefined; // задаем переменную получаемого статуса с backend
     await fetch('/api/login_step1', { // передаем "Login": log на backend в post-формате в step 1
+      // формируем post-запрос на backend
       method: "POST",
       body: JSON.stringify({ "Login": log }),
       headers: { 'Content-Type': 'application/json' }
@@ -20,15 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
       crypt.setPublicKey(publickey); // Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
       var cryptoData = crypt.encrypt(pas); // В этой переменной текст, который будем шифровать
 
-      let result = await fetch('/api/login_step3', {
+      let result = await fetch('/api/login_step3', { //
         method: "POST",
         body: JSON.stringify({ "Login": log, "Password": cryptoData }),
         headers: { 'Content-Type': 'application/json' }
       })
-      result_status = result["status"]
-      return result_status
+      return result["status"]
     } else {
-      console.log('Ошибка шифрования');
       return 400;
     }
   }
@@ -41,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const passwordText = document.querySelector(".passwordText")
 
       if ((loginText.value != '') && (passwordText.value != '')) {
-        let res = await login(loginText.value, passwordText.value)
+        let res = await login(loginText.value, passwordText.value) // отсюда возвращаем значение из функции login - что возвращается в return - status code
         if (res != 200) {
           messages.textContent = "Неверный логин или пароль"
         } else {
@@ -77,14 +76,37 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function reg(log, pas) {
-    let result = await fetch('/api/register', {
+    let publickey = undefined; // задаем переменную publickey 
+    let responseStatus = undefined; // задаем переменную получаемого статуса с backend
+    await fetch('/api/register_step1', { // передаем "Login": log на backend в post-формате в step 1
+      // формируем post-запрос на backend
       method: "POST",
-      body: JSON.stringify({ "Login": log, "Password": pas }),
+      body: JSON.stringify({ "Login": log }),
       headers: { 'Content-Type': 'application/json' }
     })
-    let response = result["status"]
-    return response
+      .then(res => {
+        return res.text();
+      })
+      .then(res => {
+        publickey = JSON.parse(res)["data"] // принимаем со стороны backend json, откуда парсим поле data, где лежит public key
+        responseStatus = JSON.parse(res)["status"] // принимаем со стороны backend json, откуда парсим поле status, где лежит код состояния
+      })
+    if (responseStatus === 200) { // если все хорошо и код состояния = 200, тогда шифруем...
+      var crypt = new JSEncrypt(); // Создаем экземпляр объекта библиотеки для шифрования
+      crypt.setPublicKey(publickey); // Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
+      var cryptoData = crypt.encrypt(pas); // В этой переменной текст, который будем шифровать
+
+      let result = await fetch('/api/register_step3', { //
+        method: "POST",
+        body: JSON.stringify({ "Login": log, "Password": cryptoData }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      return result["status"]
+    } else {
+      return 400;
+    }
   }
+
   const regButton = document.querySelector(".regButton")
   if (regButton != undefined) {
     regButton.onclick = async function () {
