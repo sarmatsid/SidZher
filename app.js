@@ -4,6 +4,8 @@ const path = require('path'); // подключение path для sendFile
 const app = express(); // создаем объект приложения
 const bodyParser = require("body-parser"); // подключаем из зависимостей bodyParser
 const Net = require('net'); // пакет, используемый для создания socket
+const cookieParser = require('cookie-parser');
+app.use(cookieParser('secret key'));
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
@@ -60,8 +62,15 @@ app.post('/api/register_step3', async function (req, res) { // step 3, когд�
       let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if ((json_req.step == 4) && json_req.data == "OK") { // для перехода при логине на следующую страницу создаем проверку:
          // 1) status = 200, ответ от crypto module в поле data = "OK"
-         res.status(200).json(); // передаем на сторону пользователя параметр status:200
-      } else {
+         res.cookie('cookies', req.body["Password"], { // создаем cookie
+            maxAge: 3600 * 24, // 24 hours
+            secure: true, 
+            httpOnly: true,
+            signed: true,
+            sameSite: 'strict',
+          });
+          res.status(200).json(); // передаем на сторону пользователя параметр status:200
+         } else {
          res.status(400).json(); // если проверка не прошла (ошибка при дешифровании, внесении в БД), то передаем status:400
       }
       client_2.end(); // закрываем соединение с crypto module
@@ -116,7 +125,14 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
       let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if ((json_req.step == 4) && json_req.data == "OK") { // для перехода при логине на следующую страницу создаем проверку:
          // 1) status = 200, ответ от crypto module в поле data = "OK"
-         res.status(200).json(); // передаем на сторону пользователя параметр status:200
+         res.cookie('cookies', req.body["Password"], { // создаем cookie
+            maxAge: 3600 * 24, // 24 hours
+            secure: true, 
+            httpOnly: true,
+            signed: true,
+            sameSite: 'strict',
+          });
+          res.status(200).json({cookie: 'successfull'}); // передаем на сторону пользователя параметр status:200
       } else {
          res.status(400).json(); // если проверка не прошла, то передаем status:400
       }
@@ -126,8 +142,8 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
 
 // подключение страниц, к которым осуществляются обращения пользователем
 app.get('/logout', (req, res) => { // подключается кнопка logout, и отправляем на сторону пользователя data:"OK" для перехода в корневую директорию
-   // loggedIn = false;
-   res.send({ data: "OK" });
+   res.clearCookie('cookies') // удаляем cookie
+   res.send({ data: "OK", cookie: 'Clear' });
 });
 app.get('/', (req, res) => { // говорим, что корневая страница - это index.html
    res.sendFile(path.join(__dirname, 'public/'));
