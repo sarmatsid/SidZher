@@ -3,7 +3,7 @@ const path = require('path'); // подключение path для sendFile
 const app = express(); // создаем объект приложения
 const bodyParser = require("body-parser"); // подключаем из зависимостей bodyParser
 const Net = require('net'); // пакет, используемый для создания socket
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
 const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
@@ -26,7 +26,7 @@ app.post('/api/register_step1', (req, res) => {
 
    client.on('data', function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
       console.log(chunk.toString()); // выводим step 2
-      var json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
+      let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if (json_req.step == 2) { // проверяем что crypto module нам не выдал ошибку (иначе step был бы равен 1)
          res.status(200).json(({ status: 200, data: json_req.data })); // передаем на сторону пользователя параметр status:200 - код состояния
          // и в data передаем public key
@@ -53,7 +53,7 @@ app.post('/api/register_step3', async function (req, res) { // step 3, когд�
 
    client_2.on('data', function (chunk) { // здесь мы принимаем step 42 со стороны crypto module
       console.log(chunk.toString()); // выводим step 4
-      var json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
+      let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if ((json_req.step == 4) && json_req.data == "OK") { // для перехода при логине на следующую страницу создаем проверку:
          // 1) status = 200, ответ от crypto module в поле data = "OK"
          res.status(200).json(); // передаем на сторону пользователя параметр status:200
@@ -81,7 +81,7 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
 
    client.on('data', function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
       console.log(chunk.toString()); // выводим step 2
-      var json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
+      let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if (json_req.step == 2) { // проверяем что crypto module нам не выдал ошибку (иначе step был бы равен 1)
          res.status(200).json(({ status: 200, data: json_req.data })); // передаем на сторону пользователя параметр status:200 - код состояния
          // и в data передаем public key
@@ -108,7 +108,7 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
 
    client_2.on('data', function (chunk) { // здесь мы принимаем step 42 со стороны crypto module
       console.log(chunk.toString()); // выводим step 4
-      var json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
+      let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if ((json_req.step == 4) && json_req.data == "OK") { // для перехода при логине на следующую страницу создаем проверку:
          // 1) status = 200, ответ от crypto module в поле data = "OK"
          res.status(200).json(); // передаем на сторону пользователя параметр status:200
