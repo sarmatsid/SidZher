@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  async function login(log, pas) {
-    let publickey = undefined;
-    let responseStatus = undefined;
-    await fetch('/api/login_step1', {
+  async function login(log, pas) { // создаем функцию login, в которой будут передаваться 2 параметра - log и pas
+    let publickey = undefined; // задаем переменную publickey 
+    let responseStatus = undefined; // задаем переменную получаемого статуса с backend
+    await fetch('/api/login_step1', { // передаем "Login": log на backend в post-формате в step 1
       method: "POST",
       body: JSON.stringify({ "Login": log }),
       headers: { 'Content-Type': 'application/json' }
@@ -12,14 +12,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return res.text();
       })
       .then(res => {
-        publickey = JSON.parse(res)["data"]
-        responseStatus = JSON.parse(res)["status"]
+        publickey = JSON.parse(res)["data"] // принимаем со стороны backend json, откуда парсим поле data, где лежит public key
+        responseStatus = JSON.parse(res)["status"] // принимаем со стороны backend json, откуда парсим поле status, где лежит код состояния
       })
-    if (responseStatus === 200) {
-      var crypt = new JSEncrypt();
-      crypt.setPublicKey(publickey);
-      var cryptoData = crypt.encrypt(pas);
-      console.log('Зашифрованый текст:' + cryptoData);
+    if (responseStatus === 200) { // если все хорошо и код состояния = 200, тогда шифруем...
+      var crypt = new JSEncrypt(); // Создаем экземпляр объекта библиотеки для шифрования
+      crypt.setPublicKey(publickey); // Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
+      var cryptoData = crypt.encrypt(pas); // В этой переменной текст, который будем шифровать
+
       let result = await fetch('/api/login_step3', {
         method: "POST",
         body: JSON.stringify({ "Login": log, "Password": cryptoData }),

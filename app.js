@@ -1,50 +1,20 @@
 const express = require("express"); // подключение express
 const path = require('path'); // подключение path для sendFile
 const redis = require('redis'); //  устанавливаем пакет "redis"
-const redisClient = redis.createClient(); // создаем его инстанс
+const redisClient = redis.createClient(); // создаем его инстанс (экземпляр)
 const app = express(); // создаем объект приложения
 const bodyParser = require("body-parser"); // подключаем из зависимостей bodyParser
-const Net = require('net');
+const Net = require('net'); // пакет, используемый для создания socket
 app.use(bodyParser.json())
 
 var bcrypt = require('bcrypt'); // подключаем bcrypt
-var salt = bcrypt.genSaltSync(12); // подключаем соль
+var salt = bcrypt.genSaltSync(12); // подключаем соль с количеством шагов = 12
 
 
-const port = 5141;
-const host = '127.0.0.1';
+const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
+const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
 
-// const NodeRSA = require("encrypt-rsa").default;
-// const fs = require('fs');
-
-// const nodeRSA = new NodeRSA();
-// const { privateKey, publicKey } = nodeRSA.createPrivateAndPublicKeys()
-
-// fs.writeFileSync('./private-key', privateKey);
-// fs.writeFileSync('./public-key', publicKey);
-
-// var JSEncrypt = require('jsencrypt');
-
-// var PlainText = 'Sasha';
-
-
-
-// var crypt = new jsencrypt.JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
-// var pubKey = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDlOJu6TyygqxfWT7eLtGDwajtNFOb9I5XRb6khyfD1Yt3YiCgQWMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76xFxdU6jE0NQ+Z+zEdhUTooNRaY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4gwQco1KRMDSmXSMkDwIDAQAB-----END PUBLIC KEY-----"
-// crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
-// var data = 'Sasha';// В этой переменной текст который будем шифровать
-// var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
-// console.log('Зашифрованый текст:'+cryptoData);// Выводим зашифрованное сообщение
-
-
-// const encryptedText = nodeRSA.encryptStringWithRsaPublicKey({ 
-//    text: 'login', 
-//    keyPath: key
-//  });
-
-//  console.log({ encryptedText });
-
-let loggedIn = false;
+// let loggedIn = false;
 
 app.post('/api/register', (req, res) => {
    let login = req.body["Login"], password = req.body["Password"];
@@ -56,7 +26,7 @@ app.post('/api/register', (req, res) => {
       if (reply == undefined) {
          redisClient.set(login, passwordToSave, (err, reply) => {
             if (err) throw err;
-            loggedIn = true;
+        //    loggedIn = true;
             res.status(200).json('ОК');
             // res.status(200).json(({status: 200, data:"OKasfasfasfasf"})); // Set key in data field
             // res.send({data:"OKasfasfasfasf"});
@@ -67,90 +37,78 @@ app.post('/api/register', (req, res) => {
    });
 });
 
-app.post('/api/login_step1', async function (req, res) {
-   // let login = req.body["Login"];
+app.post('/api/login_step1', async function (req, res) { // step 1, когда я на crypto module отправляю логин на проверку
+   // создаем json, с помощью которого будем обмениваться с crypto module
    let json = {
-      "step": 1,
-      "req_type": "auth",
-      "user": req.body["Login"],
-      "data": ""
+      "step": 1,  // шаг (всего их будет 4)
+      "req_type": "auth",  // действие (регистрация или авторизация)
+      "user": req.body["Login"], // логин
+      "data": "" // на step 1 ничего не передается; на step 2 передается public key; 
+      // на step 3 передается зашифрованный пароль; на step 4 передается status "OK" или "ERROR CHECK USERNAME!"
    };
-   json_backend = JSON.stringify(json);
+   json_backend = JSON.stringify(json); //переменную json как раз преобразуем в json-формат
 
+   const client = new Net.Socket(); // создаем первый socket для соединения с crypto module и передачи ему данных
+   client.connect({ port: port, host: host }, function () { }); // создаем connect на хост:127.0.0.1 и порт:5141
+   client.write(json_backend); // отправляем в socket наш json - записываем в него данные из нашего json
 
-   // res.send({data:"OKasfasfasfasf"});
-   // var crypt = new jsencrypt.JSEncrypt();
-   const client = new Net.Socket();
-   client.connect({ port: port, host: host }, function () { });
-
-   client.write(json_backend);
-
-   client.on('data', function (chunk) {
-      console.log(chunk.toString());
-      var json_req = JSON.parse(chunk);
-      if (json_req.step == 2) {
-         res.status(200).json(({ status: 200, data: json_req.data })); // Set key in data field
-
-         // crypt.setPublicKey(json_req.data.val());
-         // var EncryptionResult = cryptico.encrypt_raw(login, json_req.data);
-         // if (EncryptionResult.status == 'success') {
-
-
-         client.end();
+   client.on('data', function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
+      console.log(chunk.toString()); // выводим step 2
+      var json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
+      if (json_req.step == 2) { // проверяем что crypto module нам не выдал ошибку (иначе step был бы равен 1)
+         res.status(200).json(({ status: 200, data: json_req.data })); // передаем на сторону пользователя параметр status:200 - код состояния
+         // и в data передаем public key
+         client.end(); // закрываем соединение с crypto module
       }
    });
 });
 
-app.post('/api/login_step3', async function (req, res) {
+app.post('/api/login_step3', async function (req, res) { // step 3, когда я передаю на crypto module зашифрованный пароль
+   // создается также json, куда записываются логин и зашифрованный пароль
    json = {
       "step": 3,
       "req_type": "auth",
       "user": req.body["Login"],
       "data": req.body["Password"]
    };
+   json_backend = JSON.stringify(json); //переменную json как раз преобразуем в json-формат
 
-   const client_2 = new Net.Socket();
-   client_2.connect({ port: port, host: host }, function () { });
+   const client_2 = new Net.Socket();  // снова открываем socket, чтобы отправить зашифрованный пароль на crypto module
+   client_2.connect({ port: port, host: host }, function () { }); // создаем connect на хост:127.0.0.1 и порт:5141
+   client_2.write(json_backend); // отправляем в socket наш json - записываем в него данные из нашего json
 
-
-   json_backend = JSON.stringify(json);
-   // console.log(chunk.toString());
-
-   client_2.write(json_backend);
-
-   client_2.on('data', function (chunk) {
-      console.log(chunk.toString());
-      var json_req = JSON.parse(chunk);
-      if ((json_req.step == 4) && json_req.data == "OK")  {
-         loggedIn = true;
-         res.status(200).json();
+   client_2.on('data', function (chunk) { // здесь мы принимаем step 42 со стороны crypto module
+      console.log(chunk.toString()); // выводим step 4
+      var json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
+      if ((json_req.step == 4) && json_req.data == "OK")  { // для перехода при логине на следующую страницу создаем проверку:
+      // 1) status = 200, ответ от crypto module в поле data = "OK"
+         res.status(200).json(); // передаем на сторону пользователя параметр status:200
+      } else {
+         res.status(400).json(); // если проверка не прошла, то передаем status:400
       }
-      else {
-         res.status(400).json();
-      }
-      client_2.end();
+      client_2.end(); // закрываем соединение с crypto module
    });
-
 });
 
-app.get('/logout/', (req, res) => {
-   loggedIn = false;
+app.get('/logout/', (req, res) => { // подключается кнопка logout, и отправляем на сторону пользователя data:"OK" для перехода в корневую директорию
+  // loggedIn = false;
    res.send({ data: "OK" });
 });
-app.get('/', (req, res) => {
+app.get('/', (req, res) => { // говорим, что корневая страница - это index.html
    res.sendFile(path.join(__dirname, 'public/'));
 });
-app.get('/login.js', (req, res) => {
+app.get('/login.js', (req, res) => { // подключаем login.js для обращений к этому файлу
    res.sendFile(path.join(__dirname, 'public/login.js'));
 });
-app.get('/jsencrypt.min.js', (req, res) => {
+app.get('/jsencrypt.min.js', (req, res) => { // подключаем jsencrypt.min.js для обращений к этому файлу
+   // jsencrypt.min.js - js-файл, в котором реализован модуль шифрования нашего пароля (ключи генерируются в crypto module, там же производится дешифрование)
    res.sendFile(path.join(__dirname, 'public/jsencrypt.min.js'));
 });
-app.use(function (req, res, next) {
-   if (loggedIn == false) return res.redirect('/');
-   next();
-});
+// app.use(function (req, res, next) {
+//    if (loggedIn == false) return res.redirect('/');
+//    next();
+// });
 
-app.use(express.static('public'));
+app.use(express.static('public')); // подключаем папку public для обращения к страница внутри нее
 
-app.listen(3000); 
+app.listen(3000); // слушаем 3000 порт, на котором крутится localhost
