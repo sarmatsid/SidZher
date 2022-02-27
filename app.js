@@ -122,6 +122,7 @@ app.post('/api/login_step3', async function (req, res) {
       console.log(chunk.toString());
       var json_req = JSON.parse(chunk);
       if ((json_req.step == 4) && json_req.data == "OK")  {
+         loggedIn = true;
          res.status(200).json();
       }
       else {

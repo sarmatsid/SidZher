@@ -33,12 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // var crypt = new JSEncrypt();// Создаем экземпляр объекта библиотеки для шифрования
-  // crypt.setPublicKey(pubKey);// Передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
-  // var data = 'Sasha';// В этой переменной текст который будем шифровать
-  // var cryptoData = crypt.encrypt(data);// Получаем зашифрованные данные
-  // console.log('Зашифрованый текст:'+cryptoData);// Выводим зашифрованное сообщение
-
   const logButton = document.querySelector(".logButton")
   if (logButton != undefined) {
     logButton.onclick = async function () {
