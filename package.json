@@ -2,7 +2,7 @@
   "name": "SidZher",
   "version": "1.0.0",
   "scripts": {
-    "rust": "sidzher_crypto_bin",
+    "rust": "./sidzher_crypto_bin",
     "redis": "redis-server",
     "node": "node app.js",
     "start": "npm run redis & npm run rust & npm run node"
