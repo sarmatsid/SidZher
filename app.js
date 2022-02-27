@@ -8,7 +8,7 @@ const Net = require('net');
 app.use(bodyParser.json())
 
 var bcrypt = require('bcrypt'); // подключаем bcrypt
-var salt = bcrypt.genSaltSync(10); // подключаем соль
+var salt = bcrypt.genSaltSync(12); // подключаем соль
 
 
 const port = 5141;
