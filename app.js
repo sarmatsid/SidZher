@@ -5,15 +5,14 @@ const app = express(); // создаем объект приложения
 const bodyParser = require("body-parser"); // подключаем из зависимостей bodyParser
 const Net = require('net'); // пакет, используемый для создания socket
 const cookieParser = require('cookie-parser');
-const https = require('https');
-const fs = require('fs');
-app.use(cookieParser('secret key'));
+const https = require('https'); // подключаем модуль https
+const fs = require('fs'); // подключаем модуль fs для обращения к файлам
+app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
 const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
 
-const captchaKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz';
 // let loggedIn = false;
 
 // процесс регистраиции
@@ -165,14 +164,14 @@ app.get('/jsencrypt.min.js', (req, res) => { // подключаем jsencrypt.m
 
 app.use(express.static('public')); // подключаем папку public для обращения к страница внутри нее
 
-const sslServer = https.createServer({
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'ssl.pem'))
+const sslServer = https.createServer({ // подключаем sslServer для работы https
+    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')), // ssl key (путь до него)
+    cert: fs.readFileSync(path.join(__dirname, 'cert', 'ssl.pem')) // ssl certificate (путь до него)
 }, app)
 
-sslServer.listen(4333, () => console.log('sslServer start'));
+sslServer.listen(4333, () => console.log('sslServer start')); // слушаем sslServer на 4333 порту и выводим в логах, что все OK
 
 // app.listen(3000); // слушаем 3000 порт, на котором крутится localhost
 
-// $url = 'https://www.google.com/recaptcha/api/siteverify';
-// $key = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz';
+// $url = 'https://www.google.com/recaptcha/api/siteverify'; // url где производится обработка captcha
+// $key = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key for captcha
