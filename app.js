@@ -7,6 +7,8 @@ const Net = require('net'); // пакет, используемый для со�
 const cookieParser = require('cookie-parser');
 const https = require('https'); // подключаем модуль https
 const fs = require('fs'); // подключаем модуль fs для обращения к файлам
+const fetch = require('node-fetch');
+const { stringify } = require('querystring'); // требуется для проверки captcha для приведения в строковый формат передаваемых пареметров
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
 
@@ -32,18 +34,39 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
    client.connect({ port: port, host: host }, function () { }); // создаем connect на хост:127.0.0.1 и порт:5141
    client.write(json_backend); // отправляем в socket наш json - записываем в него данные из нашего json
 
-   client.on('data', function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
+   client.on('data', async function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
       console.log(chunk.toString()); // выводим step 2 - НАДО УБРАТЬ
       let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if (json_req.step == 2) { // проверяем что crypto module нам не выдал ошибку (иначе step был бы равен 0)
-         res.status(200).json(({ status: 200, data: json_req.data })); // передаем на сторону пользователя параметр status:200 - код состояния
-         // и в data передаем public key
+         // осуществляется проверка Captcha
+         if (req.body.captcha === undefined || req.body.captcha === null || req.body.captcha === '') { // проверяется, 
+            //вводилась ли captcha
+            return res.status(400).json(({ status: 400, success: false, msg: 'Please select captcha' })); // если нет, то отправляе ошибку
+         }
+         const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
+
+         // Verify URL - осуществляется проверка на стороне Google
+         const query = stringify({ // формируются параметры для проверки
+            secret: secretKey,
+            response: req.body.captcha, // данные captcha
+            remoteip: req.connection.remoteAddress
+         });
+         const verifyURL = `https://google.com/recaptcha/api/siteverify?${query}`;
+         const body = await fetch(verifyURL).then(res => res.json()); // Make a request to verifyURL
+
+         // If not successful
+         if (body.success !== undefined && !body.success) // если проверка пройдена не была, то отсылаем ошибку
+            return res.status(400).json(({ status: 400, success: false, msg: 'Failed captcha verification' }));
+
+         // If successful
+         return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
+         // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
       } else {
          res.status(400).json(({ status: 400 })); // если логин уже существует, то отстреливаем status:400 
       }
       client.end(); // закрываем соединение с crypto module
    });
-});
+})
 
 app.post('/api/register_step3', async function (req, res) { // step 3, когда я передаю на crypto module зашифрованный пароль
    // создается также json, куда записываются логин и зашифрованный пароль
@@ -66,13 +89,13 @@ app.post('/api/register_step3', async function (req, res) { // step 3, когд�
          // 1) status = 200, ответ от crypto module в поле data = "OK"
          res.cookie('cookies', req.body["Password"], { // создаем cookie
             maxAge: 3600 * 24, // 24 hours
-            secure: true, 
+            secure: true,
             httpOnly: true,
             signed: true,
             sameSite: 'strict',
-          });
-          res.status(200).json(); // передаем на сторону пользователя параметр status:200
-         } else {
+         });
+         res.status(200).json(); // передаем на сторону пользователя параметр status:200
+      } else {
          res.status(400).json(); // если проверка не прошла (ошибка при дешифровании, внесении в БД), то передаем status:400
       }
       client_2.end(); // закрываем соединение с crypto module
@@ -95,12 +118,33 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
    client.connect({ port: port, host: host }, function () { }); // создаем connect на хост:127.0.0.1 и порт:5141
    client.write(json_backend); // отправляем в socket наш json - записываем в него данные из нашего json
 
-   client.on('data', function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
+   client.on('data', async function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
       console.log(chunk.toString()); // выводим step 2 - НАДО УБРАТЬ
       let json_req = JSON.parse(chunk); // распарсили наш json (откуда можно забирать данные) из ответа с crypto module в socket - chunk
       if (json_req.step == 2) { // проверяем что crypto module нам не выдал ошибку (иначе step был бы равен 0)
-         res.status(200).json(({ status: 200, data: json_req.data })); // передаем на сторону пользователя параметр status:200 - код состояния
-         // и в data передаем public key
+         // осуществляется проверка Captcha
+         if (req.body.captcha === undefined || req.body.captcha === null || req.body.captcha === '') { // проверяется, 
+            //вводилась ли captcha
+            return res.status(400).json(({ status: 400, success: false, msg: 'Please select captcha' })); // если нет, то отправляе ошибку
+         }
+         const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
+
+         // Verify URL - осуществляется проверка на стороне Google
+         const query = stringify({ // формируются параметры для проверки
+            secret: secretKey,
+            response: req.body.captcha, // данные captcha
+            remoteip: req.connection.remoteAddress
+         });
+         const verifyURL = `https://google.com/recaptcha/api/siteverify?${query}`;
+         const body = await fetch(verifyURL).then(res => res.json()); // Make a request to verifyURL
+
+         // If not successful
+         if (body.success !== undefined && !body.success) // если проверка пройдена не была, то отсылаем ошибку
+            return res.status(400).json(({ status: 400, success: false, msg: 'Failed captcha verification' }));
+
+         // If successful
+         return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
+         // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
       } else {
          res.status(400).json(({ status: 400 })); // если неправильный логин, то отстреливаем status:400 
       }
@@ -129,12 +173,12 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
          // 1) status = 200, ответ от crypto module в поле data = "OK"
          res.cookie('cookies', req.body["Password"], { // создаем cookie
             maxAge: 3600 * 24, // 24 hours
-            secure: true, 
+            secure: true,
             httpOnly: true,
             signed: true,
             sameSite: 'strict',
-          });
-          res.status(200).json({cookie: 'successfull'}); // передаем на сторону пользователя параметр status:200
+         });
+         res.status(200).json({ cookie: 'successfull' }); // передаем на сторону пользователя параметр status:200
       } else {
          res.status(400).json(); // если проверка не прошла, то передаем status:400
       }
@@ -157,21 +201,17 @@ app.get('/jsencrypt.min.js', (req, res) => { // подключаем jsencrypt.m
    // jsencrypt.min.js - js-файл, в котором реализован модуль шифрования нашего пароля (ключи генерируются в crypto module, там же производится дешифрование)
    res.sendFile(path.join(__dirname, 'public/jsencrypt.min.js'));
 });
+
 // app.use(function (req, res, next) {
 //    if (loggedIn == false) return res.redirect('/');
 //    next();
 // });
 
-app.use(express.static('public')); // подключаем папку public для обращения к страница внутри нее
+app.use(express.static('public')); // подключаем папку public для обращения к страницам внутри нее
 
 const sslServer = https.createServer({ // подключаем sslServer для работы https
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')), // ssl key (путь до него)
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'ssl.pem')) // ssl certificate (путь до него)
+   key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')), // ssl key (путь до него)
+   cert: fs.readFileSync(path.join(__dirname, 'cert', 'ssl.pem')) // ssl certificate (путь до него)
 }, app)
 
-sslServer.listen(4333, () => console.log('sslServer start')); // слушаем sslServer на 4333 порту и выводим в логах, что все OK
-
-// app.listen(3000); // слушаем 3000 порт, на котором крутится localhost
-
-// $url = 'https://www.google.com/recaptcha/api/siteverify'; // url где производится обработка captcha
-// $key = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key for captcha
+sslServer.listen(4333); // слушаем sslServer на 4333 порту 

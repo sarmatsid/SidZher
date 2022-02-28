@@ -13,6 +13,11 @@
 </head>
 
 <body>
+	<style>
+		div {
+			padding-top: 8px;
+		}
+	</style>
 	<div class="container mt-4">
 		<div class="row">
 			<div class="col">
@@ -20,12 +25,14 @@
 				<h5 class="mess" style="color: red"></h5>
 				<input type="text" class="form-control logText" placeholder="Введите логин"><br>
 				<input type="password" class="form-control passText" placeholder="Введите пароль"><br>
-				<button class="btn btn-success logBut">Авторизоваться</button>
-				<button class="btn btn-success regBut">Зарегистрироваться</button>
-				<div class="g-recaptcha" data-type="image" data-sitekey="6LddKkodAAAAALzjQuqBjhoHt3hTR3LJMER18vVT"></div>
+				<button type="submit" class="btn btn-success logBut">Авторизоваться</button>
+				<button type="submit" class="btn btn-success regBut">Зарегистрироваться</button>
+				<div class="g-recaptcha" data-type="image" data-sitekey="6LddKkodAAAAALzjQuqBjhoHt3hTR3LJMER18vVT">
+				</div>
 			</div>
 		</div>
 	</div>
+
 </body>
 
 </html>

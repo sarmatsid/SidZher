@@ -1,5 +1,5 @@
 {
-  "name": "SidZher",
+  "name": "sidzher",
   "version": "1.0.0",
   "scripts": {
     "rust": "./sidzher_crypto_bin",
@@ -11,7 +11,11 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.16.4",
+    "express-recaptcha": "^5.1.0",
+    "fetch": "^1.1.0",
     "fs": "^0.0.1-security",
-    "https": "^1.0.0"
+    "https": "^1.0.0",
+    "node-fetch": "^2.6.7",
+    "request": "^2.88.2"
   }
 }
