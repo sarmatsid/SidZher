@@ -9,15 +9,11 @@ const https = require('https'); // подключаем модуль https
 const fs = require('fs'); // подключаем модуль fs для обращения к файлам
 const fetch = require('node-fetch');
 const { stringify } = require('querystring'); // требуется для проверки captcha для приведения в строковый формат передаваемых пареметров
-const { nextTick } = require("process");
-const res = require("express/lib/response");
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
 const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
-
-// let loggedIn = false;
 
 // процесс регистраиции
 app.post('/api/register_step1', (req, res) => { // получаю post-запрос от login.js со стороны пользователя
@@ -204,13 +200,9 @@ app.get('/jsencrypt.min.js', (req, res) => { // подключаем jsencrypt.m
    res.sendFile(path.join(__dirname, 'public/jsencrypt.min.js'));
 });
 
-// app.use(function (req, res, next) {
-//    if (loggedIn == false) return res.redirect('/');
-//    next();
-// });
-
-app.use(function (req, res, next) {
-   if (req.signedCookies === undefined || Object.keys(req.signedCookies).length === 0) return res.redirect('/')
+app.use(function (req, res, next) { // осуществляется проверка cookie
+   if (req.signedCookies === undefined || Object.keys(req.signedCookies).length === 0) return res.redirect('/') // если cookie пустые,
+   // то перенаправляем на главную страницу
    next();
 });
 
