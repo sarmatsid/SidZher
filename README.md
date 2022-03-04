@@ -1,3 +1,5 @@
+[![Lint](https://github.com/sarmatsid/SidZher/actions/workflows/lint.yml/badge.svg)](https://github.com/sarmatsid/SidZher/actions/workflows/lint.yml)
+
 # SidZher project
 
 ### RU Краткое описание
