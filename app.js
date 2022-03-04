@@ -59,7 +59,8 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
          // If successful
          return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
          // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
-      } else {
+      } 
+      else {
          res.status(400).json(({ status: 400 })); // если логин уже существует, то отстреливаем status:400 
       }
       client.end(); // закрываем соединение с crypto module
@@ -90,10 +91,11 @@ app.post('/api/register_step3', async function (req, res) { // step 3, когд�
             secure: true,
             httpOnly: true,
             signed: true,
-            sameSite: 'strict',
+            sameSite: 'strict'
          });
          res.status(200).json(); // передаем на сторону пользователя параметр status:200
-      } else {
+      } 
+      else {
          res.status(400).json(); // если проверка не прошла (ошибка при дешифровании, внесении в БД), то передаем status:400
       }
       client_2.end(); // закрываем соединение с crypto module
@@ -143,7 +145,8 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
          // If successful
          return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
          // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
-      } else {
+      } 
+      else {
          res.status(400).json(({ status: 400 })); // если неправильный логин, то отстреливаем status:400 
       }
       client.end(); // закрываем соединение с crypto module
@@ -174,10 +177,11 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
             secure: true,
             httpOnly: true,
             signed: true,
-            sameSite: 'strict',
+            sameSite: 'strict'
          });
          res.status(200).json({ cookie: 'successfull' }); // передаем на сторону пользователя параметр status:200
-      } else {
+      } 
+      else {
          res.status(400).json(); // если проверка не прошла, то передаем status:400
       }
       client_2.end(); // закрываем соединение с crypto module
