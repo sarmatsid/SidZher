@@ -9,6 +9,16 @@
 This project was created as part of the master's thesis by Sidorin Sergey and Zherdev Alexander, most of the description of this work will be in English, since it is an international language, the dissertation is devoted to authorization and user authentication on a web resource using asymmetric encryption.
 
 
+## Install and run
+
+```shell
+git clone https://github.com/sarmatsid/SidZher.git
+cd SidZher
+npm install
+npm start
+```
+
+
 ## How this works
 ```mermaid
 sequenceDiagram
@@ -26,7 +36,6 @@ sequenceDiagram
     Sidzher Crypto module->>+Server: OK/FAIL
     Server->>+Client: OK/FAIL
 ```
-
 
 ## Code flow
 
