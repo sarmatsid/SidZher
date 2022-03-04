@@ -17,5 +17,8 @@
     "https": "^1.0.0",
     "node-fetch": "^2.6.7",
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0"
   }
 }
