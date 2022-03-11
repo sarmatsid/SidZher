@@ -48,6 +48,20 @@ sequenceDiagram
     /app/login_two->>+Front: OK/FAIL
 ```
 
+## Auth
+### Basic
+![Simple login](./images/before/login_request.png)
+
+### Sidzher
+![Login step 1](./images/after/login_request_step1.png)
+![Login step 3](./images/after/login_request_step3.png)
+
+## Register new user
+### Basic
+![Simple reg](./images/before/reg_request.png)
+### SidZher
+![Reg step 1](./images/after/reg_request_step1.png)
+![Reg step 3](./images/after/reg_request_step3.png)
 
 ## Transfer type between server and Sidzher Crypto
 
