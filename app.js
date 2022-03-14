@@ -182,7 +182,7 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
             secure: true,
             httpOnly: true,
             signed: true,
-            sameSite: 'strict',
+            sameSite: 'strict'
          });
          // httpAdminMiddleware: function(req,res,next) {
          //    res.set('Strict-Transport-Security', 'max-age=60000');
