@@ -35,6 +35,11 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
 
    const client = new Net.Socket(); // создаем первый socket для соединения с crypto module и передачи ему данных
    client.connect({ port: port, host: host }, function () { }); // создаем connect на хост:127.0.0.1 и порт:5141
+   
+   client.on('error', err => {
+      console.log(err);
+   });
+
    client.write(json_backend); // отправляем в socket наш json - записываем в него данные из нашего json
 
    client.on('data', async function (chunk) { // здесь мы принимаем step 2 со стороны crypto module
