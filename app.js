@@ -184,10 +184,6 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
             signed: true,
             sameSite: 'strict'
          });
-         // httpAdminMiddleware: function(req,res,next) {
-         //    res.set('Strict-Transport-Security', 'max-age=60000');
-         //    next();
-         // }
          res.status(200).json({ cookie: 'successfull' }); // передаем на сторону пользователя параметр status:200
       } 
       else {

@@ -14,9 +14,10 @@
     "express-recaptcha": "^5.1.0",
     "fetch": "^1.1.0",
     "fs": "^0.0.1-security",
-    "https": "^1.0.0",
+    "hsts": "^2.2.0",
     "node-fetch": "^2.6.7",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "strict-transport-security": "^0.3.0"
   },
   "devDependencies": {
     "eslint": "^8.10.0"
