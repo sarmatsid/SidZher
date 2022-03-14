@@ -9,6 +9,11 @@ const https = require('https'); // подключаем модуль https
 const fs = require('fs'); // подключаем модуль fs для обращения к файлам
 const fetch = require('node-fetch');
 const { stringify } = require('querystring'); // требуется для проверки captcha для приведения в строковый формат передаваемых пареметров
+const hsts = require('strict-transport-security'); // подключаем модуль hsts
+const globalHSTS = hsts.getSTS({'max-age':{'days': 365}, includeSubDomains:true, strictTransportSecurity:true, preload:true}); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
+// includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
+
+app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
 
@@ -177,8 +182,12 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
             secure: true,
             httpOnly: true,
             signed: true,
-            sameSite: 'strict'
+            sameSite: 'strict',
          });
+         // httpAdminMiddleware: function(req,res,next) {
+         //    res.set('Strict-Transport-Security', 'max-age=60000');
+         //    next();
+         // }
          res.status(200).json({ cookie: 'successfull' }); // передаем на сторону пользователя параметр status:200
       } 
       else {
