@@ -8,14 +8,23 @@ const cookieParser = require('cookie-parser');
 const https = require('https'); // подключаем модуль https
 const fs = require('fs'); // подключаем модуль fs для обращения к файлам
 const fetch = require('node-fetch');
+const helmet = require('helmet')
 const { stringify } = require('querystring'); // требуется для проверки captcha для приведения в строковый формат передаваемых пареметров
 const hsts = require('strict-transport-security'); // подключаем модуль hsts
 const globalHSTS = hsts.getSTS({'max-age':{'days': 365}, includeSubDomains:true, strictTransportSecurity:true, preload:true}); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
 // includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
 
+app.use(helmet.frameguard())
 app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
+
+// app.use(function (req, res, next) {
+//    res.setHeader(
+//      'Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.google.com/recaptcha/api.js; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css; font-src 'self'; img-src 'self'; frame-src 'self'"
+//    );
+//    next();
+//  });
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
 const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
