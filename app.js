@@ -44,7 +44,7 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
          // осуществляется проверка Captcha
          if (req.body.captcha === undefined || req.body.captcha === null || req.body.captcha === '') { // проверяется, 
             //вводилась ли captcha
-            return res.status(400).json(({ status: 400, success: false, msg: 'Please select captcha' })); // если нет, то отправляе ошибку
+            return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
          const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
 
@@ -59,14 +59,14 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
 
          // If not successful
          if (body.success !== undefined && !body.success) // если проверка пройдена не была, то отсылаем ошибку
-            return res.status(400).json(({ status: 400, success: false, msg: 'Failed captcha verification' }));
+            return res.status(400).json({ status: 400, success: false, msg: 'Failed captcha verification' });
 
          // If successful
          return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
          // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
       } 
       else {
-         res.status(400).json(({ status: 400 })); // если логин уже существует, то отстреливаем status:400 
+         res.status(400).json({ status: 400 }); // если логин уже существует, то отстреливаем status:400 
       }
       client.end(); // закрываем соединение с crypto module
    });
@@ -130,7 +130,7 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
          // осуществляется проверка Captcha
          if (req.body.captcha === undefined || req.body.captcha === null || req.body.captcha === '') { // проверяется, 
             //вводилась ли captcha
-            return res.status(400).json(({ status: 400, success: false, msg: 'Please select captcha' })); // если нет, то отправляе ошибку
+            return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
          const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
 
@@ -145,14 +145,14 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
 
          // If not successful
          if (body.success !== undefined && !body.success) // если проверка пройдена не была, то отсылаем ошибку
-            return res.status(400).json(({ status: 400, success: false, msg: 'Failed captcha verification' }));
+            return res.status(400).json({ status: 400, success: false, msg: 'Failed captcha verification' });
 
          // If successful
          return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
          // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
       } 
       else {
-         res.status(400).json(({ status: 400 })); // если неправильный логин, то отстреливаем status:400 
+         res.status(400).json({ status: 400 }); // если неправильный логин, то отстреливаем status:400 
       }
       client.end(); // закрываем соединение с crypto module
    });
