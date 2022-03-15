@@ -5,7 +5,7 @@
     "rust": "./sidzher_crypto_bin",
     "redis": "redis-server",
     "node": "node app.js",
-    "start": "npm run redis & npm run rust & npm run node"
+    "start": "redis-server /usr/local/etc/redis.conf & npm run rust & npm run node"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
