@@ -7,24 +7,33 @@ const Net = require('net'); // пакет, используемый для со�
 const cookieParser = require('cookie-parser');
 const https = require('https'); // подключаем модуль https
 const fs = require('fs'); // подключаем модуль fs для обращения к файлам
-const fetch = require('node-fetch');
-const helmet = require('helmet')
+const fetch = require('node-fetch'); // подключаем сетевой модуль fetch
+const helmet = require('helmet') // это модуль Node.js, который помогает защитить заголовки HTTP. Он реализован в экспресс-приложениях. 
+// Таким образом, можно сказать, что Helmet.js помогает в обеспечении безопасности экспресс-приложений. Он устанавливает различные заголовки HTTP для предотвращения таких атак, как межсайтовый скриптинг (XSS), кликджекинг и т. д.
 const { stringify } = require('querystring'); // требуется для проверки captcha для приведения в строковый формат передаваемых пареметров
 const hsts = require('strict-transport-security'); // подключаем модуль hsts
-const globalHSTS = hsts.getSTS({'max-age':{'days': 365}, includeSubDomains:true, strictTransportSecurity:true, preload:true}); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
+const globalHSTS = hsts.getSTS({ 'max-age': { 'days': 365 }, includeSubDomains: true, strictTransportSecurity: true, preload: true }); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
 // includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
 
-app.use(helmet.frameguard())
+app.use(helmet.frameguard()); // заголовок X-Frame-Options HTTP ограничивает, кто может поместить ваш сайт во фрейм, что может помочь смягчить такие вещи, как атаки кликджекинга . Заголовок имеет два режима: DENYи SAMEORIGIN.
+app.disable('x-powered-by'); // отключаем заголовок http x-powered-by, так как он показывает, что используется фрэймворк express
 app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
 
-// app.use(function (req, res, next) {
-//    res.setHeader(
-//      'Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.google.com/recaptcha/api.js; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css; font-src 'self'; img-src 'self'; frame-src 'self'"
-//    );
-//    next();
-//  });
+// CSP
+app.use(function (req, res, next) {
+   res.setHeader(
+      'Content-Security-Policy', "default-src 'self'; form-action 'none; frame-ancestors 'none'; script-src 'self' https://www.google.com/recaptcha/api.js; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css; font-src 'self'; img-src 'self'; frame-src 'self'",
+   );
+   res.setHeader(
+      'Permissions-Policy', 'none',
+   );
+   res.setHeader(
+      'X-Content-Type-Options', 'nosniff',
+   );
+   next();
+});
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
 const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
@@ -44,7 +53,7 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
 
    const client = new Net.Socket(); // создаем первый socket для соединения с crypto module и передачи ему данных
    client.connect({ port: port, host: host }, function () { }); // создаем connect на хост:127.0.0.1 и порт:5141
-   
+
    client.on('error', err => {
       console.log(err);
    });
@@ -78,7 +87,7 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
          // If successful
          return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
          // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
-      } 
+      }
       else {
          res.status(400).json({ status: 400 }); // если логин уже существует, то отстреливаем status:400 
       }
@@ -113,7 +122,7 @@ app.post('/api/register_step3', async function (req, res) { // step 3, когд�
             sameSite: 'strict'
          });
          res.status(200).json(); // передаем на сторону пользователя параметр status:200
-      } 
+      }
       else {
          res.status(400).json(); // если проверка не прошла (ошибка при дешифровании, внесении в БД), то передаем status:400
       }
@@ -164,7 +173,7 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
          // If successful
          return res.status(200).json({ success: true, msg: 'Captcha OK', status: 200, data: json_req.data }); // передаем на 
          // сторону пользователя параметр status:200 - код состояния, статус обработки captcha (true) и в data передаем public key
-      } 
+      }
       else {
          res.status(400).json({ status: 400 }); // если неправильный логин, то отстреливаем status:400 
       }
@@ -199,7 +208,7 @@ app.post('/api/login_step3', async function (req, res) { // step 3, когда �
             sameSite: 'strict'
          });
          res.status(200).json({ cookie: 'successfull' }); // передаем на сторону пользователя параметр status:200
-      } 
+      }
       else {
          res.status(400).json(); // если проверка не прошла, то передаем status:400
       }
