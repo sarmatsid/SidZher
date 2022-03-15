@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "rust": "./sidzher_crypto_bin",
-    "redis": "redis-server",
+    "redis": "redis-server ", 
     "node": "node app.js",
-    "start": "redis-server /usr/local/etc/redis.conf & npm run rust & npm run node"
+    "start": "npm run redis & npm run rust & npm run node"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
