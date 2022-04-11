@@ -24,7 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
       })
     if (captchaSuccess === false) { // если captcha не введена, то выводим false
       return false; // возвращаем из всей функции статус false
-    } else {
+    }
+    else {
       if (responseStatus === 200) { // если все хорошо и код состояния = 200, тогда шифруем...
         let crypt = new JSEncrypt(); // создаем экземпляр объекта библиотеки для шифрования
         crypt.setPublicKey(publickey); // передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
@@ -36,7 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         return result["status"]; // если при step 4 все удачно и мы получаем от backend status:200, то мы выдаем status:200 ->
         // далее это будет как res == 200
-      } else {
+      }
+      else {
         return 400; // иначе res == 400
       }
     }
@@ -57,16 +59,20 @@ document.addEventListener("DOMContentLoaded", function () {
           if (res != false) { // условие если введена captcha
             if (res != 200) { // здесь используется статус из функции reg выше, где мы по прошествии всех 4 шагов получаем итоговый status - 200 или 400
               messages.textContent = "Такой пользователь уже существует"; // если status != 200 - значит такой пользователь уже существует
-            } else {
+            } 
+            else {
               window.location.href = "HW_2.html"; // иначе направляе  на главную страницу сайта
             }
-          } else { // если captcha не введена
+          } 
+          else { // если captcha не введена
             messages.textContent = "Введите Captcha";
           }
-        } else { // если политика создания пароля не выполнена, то выводим текст ошибки пользователю
+        } 
+        else { // если политика создания пароля не выполнена, то выводим текст ошибки пользователю
           messages.textContent = "Не соответствует политике создания пароля";
         }
-      } else { // если либо поле логина, либо поле пароля пустое
+      } 
+      else { // если либо поле логина, либо поле пароля пустое
         messages.textContent = "Логин и пароль не могут быть пустыми";
       }
       // очищаем поля ввода логина и пароля
@@ -99,7 +105,8 @@ document.addEventListener("DOMContentLoaded", function () {
       })
     if (captchaSuccess === false) { // если captcha не введена, то выводим false
       return false; // возвращаем из всей функции статус false
-    } else { // если captcha введена
+    } 
+    else { // если captcha введена
       if (responseStatus === 200) { // если все хорошо и код состояния = 200, тогда шифруем pas - полученный пароль (passwordText.value)
         let crypt = new JSEncrypt(); // создаем экземпляр объекта библиотеки для шифрования
         crypt.setPublicKey(publickey); // передаём объекту библиотеки шифрования публичный ключ, который является текстовой строкой(string)
@@ -111,7 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         return result["status"]; // если при step 4 все удачно и мы получаем от backend status:200, то мы выдаем status:200 ->
         // далее это будет как res == 200
-      } else {
+      } 
+      else {
         return 400; // иначе res == 400
       }
     }
@@ -129,13 +137,16 @@ document.addEventListener("DOMContentLoaded", function () {
         if (res != false) { // условие если введена captcha
           if (res != 200) { // здесь используется статус из функции login выше, где мы по прошествии всех 4 шагов получаем итоговый status - 200 или 400
             messages.textContent = "Неверный логин или пароль"; // выводим на экран ошибку, если status != 200
-          } else {
+          } 
+          else {
             window.location.href = 'HW_2.html'; // иначе открываем страницу сайта
           }
-        } else { // если captcha не введена
+        } 
+        else { // если captcha не введена
           messages.textContent = "Введите Captcha";
         }
-      } else { // если либо поле логина, либо поле пароля пустое
+      } 
+      else { // если либо поле логина, либо поле пароля пустое
         messages.textContent = "Логин и пароль не могут быть пустыми"; // выводим текст с ошибкой
       }
       // очищаем поля ввода логина и пароля

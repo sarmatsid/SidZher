@@ -40,9 +40,9 @@ app.use(expressCspHeader({
         'script-src': [SELF, INLINE, 'https://www.gstatic.com/recaptcha/', 
                                      'https://www.google.com/recaptcha/'],
         'style-src': [SELF, INLINE, 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css'],
-        'img-src': [NONE],
+        'img-src': [SELF],
         'frame-src': ['https://www.google.com/recaptcha/'],
-        'worker-src': [NONE],
+        'worker-src': [SELF],
         'block-all-mixed-content': true
     }
 }));
@@ -81,7 +81,7 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
             //вводилась ли captcha
             return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
-         const secretKey = '6Lcg6GYfAAAAAHjRfZy4DPGfTeMoEPHV9wH0irQ7'; // secret key captcha
+         const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
 
          // Verify URL - осуществляется проверка на стороне Google
          const query = stringify({ // формируются параметры для проверки
