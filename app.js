@@ -20,29 +20,28 @@ app.disable('x-powered-by'); // отключаем заголовок http x-pow
 app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
+const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
+
 
 // CSP
 app.use(function (req, res, next) {
-   // res.setHeader(
-   //    'Content-Security-Policy', "default-src 'self'; form-action 'none; frame-ancestors 'none'; script-src 'self' https://www.google.com/recaptcha/api.js https://www.gstatic.com/recaptcha/releases/Y-cOIEkAqcfDdup_qnnmkxIC/recaptcha__ru.js; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css; font-src 'self'; img-src 'self'; frame-src 'self'",
-   // );
    res.setHeader(
-      'Permissions-Policy', 'none',
+      'Permissions-Policy', 'none'
    );
    res.setHeader(
-      'X-Content-Type-Options', 'nosniff',
+      'X-Content-Type-Options', 'nosniff'
    );
    next();
 });
 
-const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
-
 app.use(expressCspHeader({
     directives: {
         'default-src': [SELF],
-        'script-src': [SELF, INLINE, 'https://www.google.com/recaptcha/api.js'],
+        'script-src': [SELF, INLINE, 'https://www.gstatic.com/recaptcha/', 
+                                     'https://www.google.com/recaptcha/'],
         'style-src': [SELF, INLINE, 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css'],
         'img-src': [NONE],
+        'frame-src': ['https://www.google.com/recaptcha/'],
         'worker-src': [NONE],
         'block-all-mixed-content': true
     }
