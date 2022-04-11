@@ -15,7 +15,7 @@ const hsts = require('strict-transport-security'); // подключаем мо�
 const globalHSTS = hsts.getSTS({ 'max-age': { 'days': 365 }, includeSubDomains: true, strictTransportSecurity: true, preload: true }); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
 // includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
 
-app.use(helmet.frameguard()); // заголовок X-Frame-Options HTTP ограничивает, кто может поместить ваш сайт во фрейм, что может помочь смягчить такие вещи, как атаки кликджекинга . Заголовок имеет два режима: DENYи SAMEORIGIN.
+app.use(helmet.frameguard()); // заголовок X-Frame-Options HTTP ограничивает, кто может поместить ваш сайт во фрейм, что может помочь смягчить такие вещи, как атаки кликджекинга. Заголовок имеет два режима: DENY и SAMEORIGIN.
 app.disable('x-powered-by'); // отключаем заголовок http x-powered-by, так как он показывает, что используется фрэймворк express
 app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
@@ -23,9 +23,9 @@ app.use(bodyParser.json()); // сообщает системе, что мы хо
 
 // CSP
 app.use(function (req, res, next) {
-   res.setHeader(
-      'Content-Security-Policy', "default-src 'self'; form-action 'none; frame-ancestors 'none'; script-src 'self' https://www.google.com/recaptcha/api.js; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css; font-src 'self'; img-src 'self'; frame-src 'self'",
-   );
+   // res.setHeader(
+   //    'Content-Security-Policy', "default-src 'self'; form-action 'none; frame-ancestors 'none'; script-src 'self' https://www.google.com/recaptcha/api.js https://www.gstatic.com/recaptcha/releases/Y-cOIEkAqcfDdup_qnnmkxIC/recaptcha__ru.js; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css; font-src 'self'; img-src 'self'; frame-src 'self'",
+   // );
    res.setHeader(
       'Permissions-Policy', 'none',
    );
@@ -34,6 +34,19 @@ app.use(function (req, res, next) {
    );
    next();
 });
+
+const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
+
+app.use(expressCspHeader({
+    directives: {
+        'default-src': [SELF],
+        'script-src': [SELF, INLINE, 'https://www.google.com/recaptcha/api.js'],
+        'style-src': [SELF, INLINE, 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css'],
+        'img-src': [NONE],
+        'worker-src': [NONE],
+        'block-all-mixed-content': true
+    }
+}));
 
 const port = 5141; // задаем в виде переменной порт для создания соединения с crypto module
 const host = '127.0.0.1'; // задаем в виде переменной адрес для создания соединения с crypto module
@@ -69,7 +82,7 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
             //вводилась ли captcha
             return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
-         const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
+         const secretKey = '6Lcg6GYfAAAAAHjRfZy4DPGfTeMoEPHV9wH0irQ7'; // secret key captcha
 
          // Verify URL - осуществляется проверка на стороне Google
          const query = stringify({ // формируются параметры для проверки
@@ -155,7 +168,7 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
             //вводилась ли captcha
             return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
-         const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
+         const secretKey = '6Lcg6GYfAAAAAHjRfZy4DPGfTeMoEPHV9wH0irQ7'; // secret key captcha
 
          // Verify URL - осуществляется проверка на стороне Google
          const query = stringify({ // формируются параметры для проверки
