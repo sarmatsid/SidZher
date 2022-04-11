@@ -13,14 +13,14 @@ const helmet = require('helmet') // это модуль Node.js, который 
 const { stringify } = require('querystring'); // требуется для проверки captcha для приведения в строковый формат передаваемых пареметров
 const hsts = require('strict-transport-security'); // подключаем модуль hsts
 const globalHSTS = hsts.getSTS({ 'max-age': { 'days': 365 }, includeSubDomains: true, strictTransportSecurity: true, preload: true }); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
-// includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
+ // includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
+ const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
 
 app.use(helmet.frameguard()); // заголовок X-Frame-Options HTTP ограничивает, кто может поместить ваш сайт во фрейм, что может помочь смягчить такие вещи, как атаки кликджекинга. Заголовок имеет два режима: DENY и SAMEORIGIN.
 app.disable('x-powered-by'); // отключаем заголовок http x-powered-by, так как он показывает, что используется фрэймворк express
 app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
-const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
 
 
 // CSP
