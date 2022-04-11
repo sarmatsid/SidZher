@@ -14,7 +14,8 @@ const { stringify } = require('querystring'); // требуется для пр�
 const hsts = require('strict-transport-security'); // подключаем модуль hsts
 const globalHSTS = hsts.getSTS({ 'max-age': { 'days': 365 }, includeSubDomains: true, strictTransportSecurity: true, preload: true }); // задаем переменную, в которой прописываем параметры hsts (время жизни в секундах - 1 год,
  // includeSubDomains:true - правило также применяется ко всем саб-доменам сайта, preload:true - следуя инструкциям и удачно отправив свой домен, браузер никогда не подключится к вашему домену через незащищённое соединение)
- const { expressCspHeader, INLINE, SELF } = require('express-csp-header');
+const { expressCspHeader, INLINE, SELF } = require('express-csp-header');
+const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
 
 app.use(helmet.frameguard()); // заголовок X-Frame-Options HTTP ограничивает, кто может поместить ваш сайт во фрейм, что может помочь смягчить такие вещи, как атаки кликджекинга. Заголовок имеет два режима: DENY и SAMEORIGIN.
 app.disable('x-powered-by'); // отключаем заголовок http x-powered-by, так как он показывает, что используется фрэймворк express
@@ -81,7 +82,6 @@ app.post('/api/register_step1', (req, res) => { // получаю post-запр�
             //вводилась ли captcha
             return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
-         const secretKey = '6LddKkodAAAAAGzse4USLHw8Agn4k98bWdkxBnTz'; // secret key captcha
 
          // Verify URL - осуществляется проверка на стороне Google
          const query = stringify({ // формируются параметры для проверки
@@ -167,7 +167,6 @@ app.post('/api/login_step1', async function (req, res) { // step 1, когда �
             //вводилась ли captcha
             return res.status(400).json({ status: 400, success: false, msg: 'Please select captcha' }); // если нет, то отправляе ошибку
          }
-         const secretKey = '6Lcg6GYfAAAAAHjRfZy4DPGfTeMoEPHV9wH0irQ7'; // secret key captcha
 
          // Verify URL - осуществляется проверка на стороне Google
          const query = stringify({ // формируются параметры для проверки
