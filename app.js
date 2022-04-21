@@ -89,7 +89,6 @@ app.use(function (req, res, next) {
    );
    next();
 });
-
 app.use(expressCspHeader({
     directives: {
         'default-src': [SELF],
