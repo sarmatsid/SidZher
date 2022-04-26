@@ -30,11 +30,15 @@ const AUTH_TYPE = "auth";
 const REG_TYPE = "reg"
 
 app.use(helmet.frameguard()); // заголовок X-Frame-Options HTTP ограничивает, кто может поместить ваш сайт во фрейм, что может помочь смягчить такие вещи, как атаки кликджекинга. Заголовок имеет два режима: DENY и SAMEORIGIN.
+app.use(helmet.xssFilter()); // это функция Internet Explorer, Chrome и Safari, которая останавливает загрузку страниц при обнаружении отраженных атак межсайтового скриптинга (XSS)
+app.use(helmet.ieNoOpen()); // устанавливает X-Download-Optionsзаголовок, специфичный для Internet Explorer 8. Он принудительно сохраняет потенциально небезопасные загрузки, смягчая выполнение HTML в контексте сайта.
 app.disable('x-powered-by'); // отключаем заголовок http x-powered-by, так как он показывает, что используется фрэймворк express
 app.use(globalHSTS); // говорим,что hsts работает на любой странице сайта
 app.use(cookieParser('secret key')); // сообщает об использовании cookie и их обработке
 app.use(bodyParser.json()); // сообщает системе, что мы хотим использовать json
-
+app.use(helmet({ crossOriginOpenerPolicy: true })); // позволяет убедиться, что документ верхнего уровня не использует группу контекста просмотра совместно с документами из разных источников. Sets "Cross-Origin-Opener-Policy: same-origin"
+app.use(helmet({ crossOriginEmbedderPolicy: true })); // предотвращает загрузку документом любых ресурсов из разных источников, которые явно не предоставляют разрешение документа (с помощью CORP или CORS). Sets "Cross-Origin-Embedder-Policy: require-corp"
+app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" } })); // чтобы браузер блокировал межсайтовые/межсайтовые запросы без корреспонденции к данному ресурсу.
 
 async function verify_capcha_and_send_data(req, res, json_req) { // проверяем что crypto module нам не выдал ошибку (иначе step был бы равен 0)
    // осуществляется проверка Captcha
