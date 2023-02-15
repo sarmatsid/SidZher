@@ -22,6 +22,33 @@ npm start
 ## How this works
 ```mermaid
 sequenceDiagram
+    participant Client
+    participant Server
+    participant Sidzher Crypto module
+    participant Redis DB
+    Client->>+Server: Login request
+    Server->>+Sidzher Crypto module: Check user in database
+    Sidzher Crypto module->>+Redis DB: User exist request
+    Sidzher Crypto module->>+Sidzher Crypto module: Generate asymmetrick keys 
+    Sidzher Crypto module->>+Server: Send encryption public key
+    Server->>+Client: Send encryption key with script for encrypt
+    Client->>+Server: Send encrypted password
+    Server->>+Sidzher Crypto module: Send login and encrypted password
+    Sidzher Crypto module->>+Sidzher Crypto module: Decrypt and hash password
+    Sidzher Crypto module->>+Redis DB: Compare hashed password with password in db
+    Redis DB->>+Sidzher Crypto module: OK/FAIL
+    Sidzher Crypto module->>+Server: OK/FAIL
+    Server->>+Client: OK/FAIL
+```
+
+### MITM Diagram
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Hacker
+    participant Server
+    participant Sidzher Crypto module
+    participant Redis DB
     Client->>+Server: Login request
     Server->>+Sidzher Crypto module: Check user in database
     Sidzher Crypto module->>+Redis DB: User exist request
@@ -88,3 +115,5 @@ sequenceDiagram
 
 `data` field used for transfer public key, encrypted data and answer for login
 
+# Links
+[SidZher crypto](https://github.com/CNDspace/SidZher_crypto) - crypto module
